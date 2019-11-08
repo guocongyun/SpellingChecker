@@ -41,7 +41,7 @@ def format(print_lines, feed_back,title):
         print("\u2501", end="")
     print("\u251B", end="")  # bottom right corner
     if feed_back == True:
-        time.sleep(0.3) # allow user to have time to see the feed back
+        time.sleep(0.3) # allow user to  have time to see the feed back
 
 
 # this is a function for checking if the user inputted word is correct
