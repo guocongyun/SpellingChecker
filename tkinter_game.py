@@ -23,6 +23,23 @@ def defining_units():
 def activate_mouse():
     canvas.bind("<Button-1>", click_event)
 
+def generate_decisions(scenario):
+    # choice 4 boxes choices
+    for i in range(4):
+        if i < 2:
+            xy[0].append([2 * w + i * 4 * w, 9 * h, 2 * w + (i + 1) * 4 * w, 10 * h])
+            decisions.append(canvas.create_rectangle(xy[0][i], fill="grey", outline='black'))
+            decisions.append(
+                canvas.create_text(window_width / 3 + i * window_width / 3, window_height / 60 + 9 * h, fill="white",
+                                   font="Times 10", text=choices[scenario][i]))
+        else:
+            xy[0].append([2 * w + (i - 2) * 4 * w, 10 * h, 2 * w + (i - 1) * 4 * w, 11 * h])
+            decisions.append(canvas.create_rectangle(xy[0][i], fill="grey", outline='black'))
+            decisions.append(
+                canvas.create_text(window_width / 3 + (i - 2) * window_width / 3, window_height / 60 + 10 * h,
+                                   fill="white",
+                                   font="Times 10", text=choices[scenario][i]))
+
 
 def light_area(list, option):
     canvas.itemconfigure(list[option], fill="red")
@@ -40,7 +57,12 @@ def configuring_canvas():
     canvas.pack()
     return canvas
 
-
+xy = [[], []]
+position = []
+decisions = []
+choices = [
+    ["Please choose a character", "Please choose a character", "Please choose a character", "Please choose a character"]
+]
 window, window_width, window_height = configuring_window()
 unit_width, unit_height, w, h = defining_units()
 canvas = configuring_canvas()
