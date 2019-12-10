@@ -57,6 +57,16 @@ def generating_story(image_file, text):
     # photoImg.zoom(scale_w, scale_h)
     canvas.create_image(h, h, image=image, anchor=NW)
 
+def click_event(event):
+    x = event.x
+    y = event.y
+    history = []
+    for i in range(len(xy[0])):
+        if xy[0][i][0] <= x <= xy[0][i][2] and xy[0][i][1] <= y <= xy[0][i][3]:
+            print("button", i, "clicked")
+            light_area(decisions, i)
+            canvas.after(500, dim_area, decisions, i)
+
 def character_creation():
     # players
     xy[0].append([2 * w, 15 * h, 6 * w, 21 * h])
