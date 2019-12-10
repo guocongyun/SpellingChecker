@@ -57,9 +57,52 @@ def generating_story(image_file, text):
     # photoImg.zoom(scale_w, scale_h)
     canvas.create_image(h, h, image=image, anchor=NW)
 
+def character_movement():
+    global direction, collide
+    check_character_boarder()
+    if direction == "left":
+        canvas.move(characters[0], collide[0]*-characters_attribute[0][1], 0)
+    elif direction == "right":
+        canvas.move(characters[0], collide[1]*characters_attribute[0][3], 0)
+    elif direction == "up":
+        canvas.move(characters[0], 0, collide[2]*-characters_attribute[0][0])
+    elif direction == "down":
+        canvas.move(characters[0], 0, collide[3]*characters_attribute[0][2])
+        # repeat movement
+
+def check_character_boarder():
+    global position
+    position = canvas.coords(characters[0])
+    if position[0] < 0:
+        canvas.coords(characters[0], window_width, position[1],
+                      window_width - characters_size[0][0], position[3])
+    elif position[2] > window_width:
+        canvas.coords(characters[0], characters_size[0][0], position[1], 0, position[3])
+    elif position[3] > window_height:
+        canvas.coords(characters[0], position[0], 8 * h + characters_size[0][1], position[2], 8 * h)
+    elif position[1] < 8 * h:
+        canvas.coords(characters[0], position[0], window_height, position[2],
+                      window_height - characters_size[0][1])
+    global collide
+    for enemy_i in range(len(xy[1])-1):
+        enemy_i = enemy_i + 1
+        position_i = canvas.coords(characters[enemy_i])
+        if position_i[0] < position[2] and position_i[2] > position[0] and position_i[1] < position[
+            3] and position_i[3] > position[1]:
+            if position[0] > position_i[0]:
+                collide[0] = -5
+            if position[2] < position_i[2]:
+                collide[1] = -5
+            if position[1] < position_i[1]:
+                collide[3] = -5
+            if position[3] > position_i[3]:
+                collide[2] = -5
+    print(collide)
+
 def click_event(event):
     x = event.x
-    y = event.y
+    y = event.yreation()
+                # enemy_movement()
     history = []
     for i in range(len(xy[0])):
         if xy[0][i][0] <= x <= xy[0][i][2] and xy[0][i][1] <= y <= xy[0][i][3]:
@@ -71,7 +114,7 @@ def click_event(event):
                 delete_unused_characters(i - 4)
                 deactivate_mouse()
                 move_start_position()
-
+                activate_keyboard()
 
 def key_pressed(event):
     global direction, key
