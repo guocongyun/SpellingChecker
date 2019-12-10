@@ -71,10 +71,7 @@ def click_event(event):
                 delete_unused_characters(i - 4)
                 deactivate_mouse()
                 move_start_position()
-                # activate_keyboard()
-                # character_movement()
-                # enemy_creation()
-                # enemy_movement()
+
 
 def key_pressed(event):
     global direction, key
