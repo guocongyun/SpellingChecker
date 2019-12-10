@@ -13,6 +13,12 @@ def configuring_window():
     window.geometry("%dx%d+%d+%d" % (window_width, window_height, center_width, center_height))
     return window, window_width, window_height
 
+def defining_units():
+    unit_width = window_width / 12
+    unit_height = window_height / 30
+    w = unit_width
+    h = unit_height
+    return unit_width, unit_height, w, h
 
 def configuring_canvas():
     canvas = Canvas(window, bg="black", width=window_width, height=window_height)
@@ -21,5 +27,6 @@ def configuring_canvas():
 
 
 window, window_width, window_height = configuring_window()
+unit_width, unit_height, w, h = defining_units()
 canvas = configuring_canvas()
 window.mainloop()
