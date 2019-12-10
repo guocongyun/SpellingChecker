@@ -40,6 +40,14 @@ def generate_decisions(scenario):
                                    fill="white",
                                    font="Times 10", text=choices[scenario][i]))
 
+def click_event():
+    pass
+
+def generate_interface():
+    generating_story("forest.png", "please select your character")
+    generate_decisions(0)
+    activate_mouse()
+
 def generating_story(image_file, text):
     canvas.create_text(window_width / 2 + h, h, fill="white", font="Times 10 bold", text=text, anchor=NW)
     image = PhotoImage(file=image_file)
@@ -48,6 +56,7 @@ def generating_story(image_file, text):
     # scale_h = new_height / old_height
     # photoImg.zoom(scale_w, scale_h)
     canvas.create_image(h, h, image=image, anchor=NW)
+
 def character_creation():
     # players
     xy[0].append([2 * w, 15 * h, 6 * w, 21 * h])
@@ -118,6 +127,6 @@ characters_size = [
 window, window_width, window_height = configuring_window()
 unit_width, unit_height, w, h = defining_units()
 canvas = configuring_canvas()
-
-generating_story("forest.png", "please select your character")
+generate_interface()
+character_creation()
 window.mainloop()
