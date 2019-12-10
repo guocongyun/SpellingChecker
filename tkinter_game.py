@@ -71,6 +71,54 @@ def click_event(event):
                 delete_unused_characters(i - 4)
                 deactivate_mouse()
                 move_start_position()
+                # activate_keyboard()
+                # character_movement()
+                # enemy_creation()
+                # enemy_movement()
+
+def key_pressed(event):
+    global direction, key
+    print(key)
+    if event.keysym == "Left":
+        direction = "left"
+        key[0] = 1
+    elif event.keysym == "Right":
+        direction = "right"
+        key[1] = 1
+    elif event.keysym == "Up":
+        direction = "up"
+        key[2] = 1
+    elif event.keysym == "Down":
+        direction = "down"
+        key[3] = 1
+
+
+def key_released(event):
+    global direction, key
+    if sum(key) <= 1:
+        direction = "0"
+    if event.keysym == "Left":
+        key[0] = 0
+    if event.keysym == "Right":
+        key[1] = 0
+    if event.keysym == "Up":
+        key[2] = 0
+    if event.keysym == "Down":
+        key[3] = 0
+
+
+def activate_keyboard():
+    canvas.bind("<KeyPress>", key_pressed)
+    canvas.bind("<KeyRelease>", key_released)
+    canvas.focus_set()
+
+
+def deactivate_keyboard():
+    canvas.unbind("<Down>")
+    canvas.unbind("<Up>")
+    canvas.unbind("<Right>")
+    canvas.unbind("<Left>")
+
 
 def move_start_position():
     global position
