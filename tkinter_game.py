@@ -66,6 +66,33 @@ def click_event(event):
             print("button", i, "clicked")
             light_area(decisions, i)
             canvas.after(500, dim_area, decisions, i)
+            if 3 < i < 7:
+                clear_screen(i - 4)
+                delete_unused_characters(i - 4)
+
+def clear_screen(choice):
+    for item in range(len(decisions)):
+        canvas.delete(decisions[item])
+    for item in range(len(characters)):
+        if item != choice:
+            canvas.delete(characters[item])
+
+def delete_unused_characters(choice):
+    global characters, characters_attribute, characters_size
+    characters = [characters[choice]]
+    characters_attribute = [characters_attribute[choice]]
+    characters_size = [characters_size[choice]]
+    xy[1] = [xy[1][choice]]
+    # while len(characters) > 1:
+    #     for x in range(len(characters)):
+    #         print(x)
+    #         print(characters)
+    #         print(choice)
+    #         print(choice - count)
+    #         if characters[x] != characters[choice - count]:
+    #             characters.remove(characters[x])
+    #             characters_size.remove(characters_size[x])
+    #             characters_attribute.remove(characters_attribute[x])
 
 def character_creation():
     # players
