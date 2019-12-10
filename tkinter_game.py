@@ -23,6 +23,15 @@ def defining_units():
 def activate_mouse():
     canvas.bind("<Button-1>", click_event)
 
+
+def light_area(list, option):
+    canvas.itemconfigure(list[option], fill="red")
+
+
+def dim_area(list, option):
+    canvas.itemconfigure(list[option], fill="grey")
+
+
 def deactivate_mouse():
     canvas.unbind("<Button-1>")
 
