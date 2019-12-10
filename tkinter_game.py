@@ -1,3 +1,4 @@
+from random import randint
 from tkinter import *
 
 
@@ -115,6 +116,40 @@ def click_event(event):
                 deactivate_mouse()
                 move_start_position()
                 activate_keyboard()
+                character_movement()
+
+
+def enemy_creation():
+    global characters, characters_attribute, characters_size
+    number_of_enemy = difficulty  # randint(2,20)
+    weak_enemy = 1 + int(number_of_enemy / 10)
+    strong_enemy = number_of_enemy - weak_enemy
+    position = canvas.coords(characters)
+    enemy = 0
+    while enemy < number_of_enemy:
+        overlap = False
+        if enemy < weak_enemy:
+            print(characters_size)
+            enemy_size = characters_size[0][0] * characters_size[0][1] - 100
+            color = "yellow"
+        else:
+            enemy_size = characters_size[0][0] * characters_size[0][1] + 100 * (enemy - weak_enemy)
+            color = "purple"
+        enemy_width = enemy_size ** (1 / 2)
+        enemy_height = enemy_size ** (1 / 2)
+        enemy_x_pos = randint(0, int(window_width - enemy_width))
+        enemy_y_pos = randint(8 * int(h), 26 * int(h))
+        enemy_position = [enemy_x_pos, enemy_y_pos, enemy_x_pos + enemy_width, enemy_y_pos + enemy_height]
+        for character in xy[1]:
+            if character[0] < enemy_position[2] and character[2] > enemy_position[0] \
+                    and character[1] < enemy_position[3] and character[3] > enemy_position[1]:
+                overlap = True
+        if not overlap:
+            xy[1].append(enemy_position)
+            characters.append(canvas.create_rectangle(xy[1][enemy + 1], fill=color))
+            characters_size.append([enemy_width, enemy_height])
+            characters_attribute.append([1, 1, 3])
+            enemy += 1
 
 def key_pressed(event):
     global direction, key
