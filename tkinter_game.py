@@ -69,6 +69,24 @@ def click_event(event):
             if 3 < i < 7:
                 clear_screen(i - 4)
                 delete_unused_characters(i - 4)
+                deactivate_mouse()
+                move_start_position()
+
+def move_start_position():
+    global position
+    position = canvas.coords(characters[0])
+    if position[0] < 6 * w - characters_size[0][0] / 2 - 2:
+        canvas.move(characters[0], 1, 0)
+        canvas.after(5, move_start_position)
+    elif position[0] > 6 * w - characters_size[0][0] / 2 + 2:
+        canvas.move(characters[0], -1, 0)
+        canvas.after(5, move_start_position)
+    elif position[1] < 30 * h - characters_size[0][1] - 2:
+        canvas.move(characters[0], 0, 1)
+        canvas.after(5, move_start_position)
+    elif position[1] > 30 * h - characters_size[0][1] + 2:
+        canvas.move(characters[0], 0, -1)
+        canvas.after(5, move_start_position)
 
 def clear_screen(choice):
     for item in range(len(decisions)):
