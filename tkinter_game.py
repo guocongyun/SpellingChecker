@@ -40,6 +40,37 @@ def generate_decisions(scenario):
                                    fill="white",
                                    font="Times 10", text=choices[scenario][i]))
 
+def character_creation():
+    # players
+    xy[0].append([2 * w, 15 * h, 6 * w, 21 * h])
+    decisions.append(canvas.create_rectangle(xy[0][4], fill="grey", outline='black'))
+    xy[1].append(
+        [4 * w - characters_size[0][0] / 2, 16 * h, 4 * w + characters_size[0][0] / 2, 16 * h + characters_size[0][1]])
+    characters.append(canvas.create_rectangle(xy[1][0], fill="white"))
+
+    xy[0].append([6 * w, 15 * h, 10 * w, 21 * h])
+    decisions.append(canvas.create_rectangle(xy[0][5], fill="grey", outline='black'))
+    xy[1].append(
+        [8 * w - characters_size[1][0] / 2, 16 * h, 8 * w + characters_size[1][0] / 2, 16 * h + characters_size[1][1]])
+    characters.append(canvas.create_oval(xy[1][1], fill="white"))
+
+    xy[0].append([2 * w, 21 * h, 6 * w, 27 * h])
+    decisions.append(canvas.create_rectangle(xy[0][6], fill="grey", outline='black'))
+    xy[1].append(
+        [4 * w - characters_size[2][0] / 2, 22 * h, 4 * w + characters_size[2][0] / 2, 22 * h + characters_size[2][1]])
+    characters.append(canvas.create_rectangle(xy[1][2], fill="white"))
+
+    # text
+    xy[0].append([6 * w, 21 * h, 10 * w, 27 * h])
+    decisions.append(canvas.create_rectangle(xy[0][7], fill="grey", outline='black'))
+    characters.append(canvas.create_text(7.9 * w, 23 * h, text="In progress..."))
+
+    # # enemy
+    # xy[1].append([4 * w - characters_size[2][0] / 2, 22 * h, 4 * w + characters_size[2][0] / 2, 22 * h + characters_size[2][1]])
+    # characters.append(canvas.create_rectangle(xy[1][2], fill="white"))
+
+    for i in range(len(xy[1])):
+        print(canvas.bbox(characters[i]))
 
 def light_area(list, option):
     canvas.itemconfigure(list[option], fill="red")
@@ -62,6 +93,19 @@ position = []
 decisions = []
 choices = [
     ["Please choose a character", "Please choose a character", "Please choose a character", "Please choose a character"]
+]
+characters = []
+characters_attribute = [
+    [1, 1, 1, 1, 10],
+    [1, 1, 1, 1, 10],
+    [2, 1, 2, 1, 10],
+    [0, 0, 0, 0, 0]
+]
+characters_size = [
+    [30, 30, 1],
+    [900 ** (1 / 2), 30, 1],
+    [450 ** (1 / 2), 2 * 450 ** (1 / 2), 2],
+    [0, 0]
 ]
 window, window_width, window_height = configuring_window()
 unit_width, unit_height, w, h = defining_units()
