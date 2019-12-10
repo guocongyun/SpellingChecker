@@ -20,6 +20,12 @@ def defining_units():
     h = unit_height
     return unit_width, unit_height, w, h
 
+def activate_mouse():
+    canvas.bind("<Button-1>", click_event)
+
+def deactivate_mouse():
+    canvas.unbind("<Button-1>")
+
 def configuring_canvas():
     canvas = Canvas(window, bg="black", width=window_width, height=window_height)
     canvas.pack()
