@@ -98,12 +98,10 @@ def check_character_boarder():
                 collide[3] = -5
             if position[3] > position_i[3]:
                 collide[2] = -5
-    print(collide)
 
 def click_event(event):
     x = event.x
-    y = event.yreation()
-                # enemy_movement()
+    y = event.y
     history = []
     for i in range(len(xy[0])):
         if xy[0][i][0] <= x <= xy[0][i][2] and xy[0][i][1] <= y <= xy[0][i][3]:
@@ -117,6 +115,8 @@ def click_event(event):
                 move_start_position()
                 activate_keyboard()
                 character_movement()
+                enemy_creation()
+                enemy_movement()
 
 
 def enemy_creation():
@@ -167,6 +167,41 @@ def key_pressed(event):
         direction = "down"
         key[3] = 1
 
+def check_enemy_boarder():
+    global characters_attribute, count, collide
+    for enemy_i in range(len(xy[1])-1):
+        enemy_i = enemy_i + 1
+        count = 1
+        position_i = canvas.coords(characters[enemy_i])
+        if position_i[0] <= 0:
+            characters_attribute[enemy_i][0] = -characters_attribute[enemy_i][0]
+        elif position_i[2] >= window_width:
+            characters_attribute[enemy_i][0] = -characters_attribute[enemy_i][0]
+        elif position_i[3] >= window_height:
+            characters_attribute[enemy_i][1] = -characters_attribute[enemy_i][1]
+        elif position_i[1] <= 8 * h:
+            characters_attribute[enemy_i][1] = -characters_attribute[enemy_i][1]
+        else:
+            count -= 1
+            for enemy_j in range(len(xy[1])):
+                if enemy_i != enemy_j:
+                    position_j = canvas.coords(characters[enemy_j])
+                    if position_i[0] < position_j[2] and position_i[2] > position_j[0] and position_i[1] < position_j[
+                        3] and position_i[3] > position_j[1]:
+                        # if position_j[0] <= position_i[0] < position_j[2] or position_j[0] <= position_i[2] < position_j[2]:
+                        #     if position_j[1] <= position_i[1] < position_j[3] or position_j[1] <= position_i[3] < position_j[3]:\
+                        # counts[character_i] += 1
+                        count += 1
+                        if count <= 1:
+                            characters_attribute[enemy_i ][0] = -characters_attribute[enemy_i ][0]
+                            characters_attribute[enemy_i ][1] = -characters_attribute[enemy_i ][1]
+
+def enemy_movement():
+    check_enemy_boarder()
+    for character in range(len(characters) - 1):
+        enemy = character + 1
+        canvas.move(characters[enemy], characters_attribute[enemy][0], characters_attribute[enemy][1])
+    canvas.after(characters_attribute[1][2], enemy_movement)
 
 def key_released(event):
     global direction, key
