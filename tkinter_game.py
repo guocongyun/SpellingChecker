@@ -26,6 +26,21 @@ canvas.pack(fill="both", expand=TRUE)
 # The Data above are all constants
 
 class Battle:
+    def generating_statistic(self):
+        life = Image.open("pixel_heart.png")
+        self.life = ImageTk.PhotoImage(life)
+        # life = life.resize((int(GameSystem.texture_size[0]), int(GameSystem.texture_size[1])), Image.ANTIALIAS)
+        # life = ImageTk.PhotoImage(self.life)
+        game_system.life_identifier = []
+        for number in range(game_system.life):
+            game_system.life_identifier.append(
+                canvas.tag_raise(canvas.create_image(h + number * 30, h, image=self.life, anchor=NW)))
+
+        text = "Score : " + str(game_system.score)
+        game_system.score_identifier = canvas.create_text(window_width - 100, h, fill="white", font="Times 10 bold",
+                                                          text=text, anchor=NW)
+
+        return self.life
 
     def move_start_position(self):
         self.position = canvas.coords(game_system.character[0].identifier)
@@ -108,6 +123,7 @@ class Battle:
     def character_growth(self):
         game_system.score = game_system.score + 10
         canvas.delete(game_system.score_identifier)
+        self.generating_statistic()
         game_system.character[0].character_size = game_system.character[
                                                       0].character_size * game_system.scale_factor + 100 * game_system.difficulty * game_system.scale_factor
         if game_system.player_choice == 0:
@@ -234,6 +250,10 @@ class Battle:
 
     def lose_life(self):
         game_system.life = game_system.life - 1
+        for number in range(len(game_system.life_identifier)):
+            canvas.delete(game_system.life_identifier[number])
+        canvas.delete(game_system.score_identifier)
+        self.life = self.generating_statistic()
         if game_system.life == 0:
             canvas.create_text(6 * w, 15 * h, fill="white", font="Times 30 bold", text="YOU LOSE", anchor=CENTER)
 
@@ -598,6 +618,7 @@ class GameSystem:
 
     def selecting(self):
         self.text_adventure.image = self.text_adventure.generating_story()
+        self.battle.life = self.battle.generating_statistic()
         self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
             True)
 
@@ -640,6 +661,7 @@ choices = ["Please choose a character", "Please choose a character", "Please cho
 textadventure = Tutorial(battle, image_file, text, choices)
 game_system = GameSystem(battle, textadventure)
 game_system.text_adventure.image = game_system.text_adventure.generating_story()
+game_system.battle.life = game_system.battle.generating_statistic()
 game_system.text_adventure.texture_a, game_system.text_adventure.texture_b = game_system.text_adventure.generating_texture(
     True)
 # scaling
