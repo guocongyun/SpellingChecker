@@ -538,6 +538,8 @@ class GameSystem:
         elif event.keysym == "space":
             game_system.pause = not game_system.pause
             self.enemy_recolor()
+        elif event.keysym == "b":
+            self.screen_shot = self.boss_key()
 
     def key_released(self, event):
         if sum(self.battle.key) <= 1:
@@ -560,6 +562,26 @@ class GameSystem:
                     self.battle.direction = "up"
                 elif number == 3:
                     self.battle.direction = "down"
+
+    def boss_key(self):
+        if self.boss == False:
+            self.pause = True
+            screen_shot = PhotoImage(file="boss_key.png")
+            self.boss = canvas.create_image(0, 0, image=screen_shot, anchor=NW)
+            self.fullscreen()
+            self.deactivate_mouse()
+            return screen_shot
+        else:
+            canvas.delete(self.boss)
+            self.pause = False
+            self.boss = False
+            self.fullscreen()
+
+    def fullscreen(self):
+        if (window.attributes('-fullscreen')):
+            window.attributes('-fullscreen', False)
+        else:
+            window.attributes('-fullscreen', True)
 
     def activate_mouse(self):
         canvas.bind("<Button-1>", self.click_event)
@@ -598,6 +620,8 @@ class GameSystem:
         self.design = []
         self.cheat = False
         self.life = 100 * self.difficulty
+        self.screen_shot = None
+        self.boss = False
         self.pause = False
         # self.deactivate_mouse()
         self.activate_keyboard()
