@@ -512,6 +512,16 @@ class GameSystem:
             self.battle.key[2] = 0
         if event.keysym == "Down":
             self.battle.key[3] = 0
+        for number in range(4):
+            if self.battle.key[number] == 1:
+                if number == 0:
+                    self.battle.direction = "left"
+                elif number == 1:
+                    self.battle.direction = "right"
+                elif number == 2:
+                    self.battle.direction = "up"
+                elif number == 3:
+                    self.battle.direction = "down"
 
     def activate_mouse(self):
         canvas.bind("<Button-1>", self.click_event)
