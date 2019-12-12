@@ -45,6 +45,7 @@ class Battle:
             self.character_movement()
             self.enemy_creation()
             self.enemy_movement()
+            self.character_ability()
 
     class normal_enemy:
 
@@ -138,8 +139,11 @@ class Battle:
     def enemy_recolor(self):
         for number in range(len(game_system.character) - 1):
             enemy_number = number + 1
-            canvas.itemconfig(game_system.character[enemy_number].identifier,
-                              fill=game_system.character[enemy_number].color)
+            if self.ability == "stop":
+                canvas.itemconfig(game_system.character[enemy_number].identifier, fill="grey")
+            if self.ability != "stop":
+                canvas.itemconfig(game_system.character[enemy_number].identifier,
+                                  fill=game_system.character[enemy_number].color)
             if game_system.character[enemy_number].character_size < game_system.character[0].character_size:
                 canvas.itemconfig(game_system.character[enemy_number].identifier, fill="yellow")
 
@@ -258,20 +262,37 @@ class Battle:
     def enemy_movement(self):
         self.check_enemy_boarder()
         print(game_system.scale_factor)
-        for character in range(len(game_system.character) - 1):
-            enemy = character + 1
-            canvas.move(game_system.character[enemy].identifier,
-                        game_system.scale_factor * game_system.character[enemy].character_attribute[0],
-                        game_system.scale_factor * game_system.character[enemy].character_attribute[1])
+        if self.ability != "stop":
+            for character in range(len(game_system.character) - 1):
+                enemy = character + 1
+                canvas.move(game_system.character[enemy].identifier,
+                            game_system.scale_factor * game_system.character[enemy].character_attribute[0],
+                            game_system.scale_factor * game_system.character[enemy].character_attribute[1])
 
         canvas.after(game_system.character[1].character_attribute[2], self.enemy_movement)
 
+    def character_ability(self):
+        if game_system.character[0].ability == "bend_time":
+            self.ability_mechanism += 1
+            frequency = randint(0, 50)
+            if self.ability_mechanism >= frequency:
+                self.ability = "stop"
+                self.enemy_recolor()
+                self.ability_mechanism = 0
+            if self.ability_mechanism == 4 and self.ability == "stop":
+                self.ability = "continue"
+                self.enemy_recolor()
+                self.ability_mechanism = 0
+            canvas.after(1000, self.character_ability)
 
     def __init__(self):
         self.position = []
         self.collide = [1, 1, 1, 1]
         self.key = [0, 0, 0, 0]
         self.direction = "0"
+        self.ability = False
+        self.ability_mechanism = 0
+        self.character_ability
         self.life = None
 
 
@@ -366,18 +387,24 @@ class Tutorial(TextAdventure):
                                (game_system.design[index].xy[1] + game_system.design[index].xy[3]) / 2]
             # game_system.design[index].identifier = canvas.create_rectangle(game_system.design[index].xy,
             #                                                                outline='black')
+            game_system.design[index].identifier = canvas.create_text(center_position, fill="white",
+                                                                      font="Times 10",
+                                                                      text=game_system.design[index].text[0])
             center_position[1] = center_position[1] + 15
+            game_system.design[index].identifier_text = canvas.create_text(center_position, fill="white",
+                                                                           font="Times 10",
+                                                                           text=game_system.design[index].text[1])
 
-        def __init__(self, xy):
+        def __init__(self, xy, text=[]):
             self.xy = xy
             self.text = text
 
     def character_boxes(self):
         # creating Box
-        game_system.design.append(self.Box([3 * w, 12 * h, 6 * w, 18 * h]))
-        game_system.design.append(self.Box([6 * w, 12 * h, 9 * w, 18 * h]))
-        game_system.design.append(self.Box([3 * w, 18 * h, 6 * w, 24 * h]))
-        game_system.design.append(self.Box([6 * w, 18 * h, 9 * w, 24 * h]))
+        game_system.design.append(self.Box([3 * w, 12 * h, 6 * w, 18 * h], ["He is fast", "maybe a bit too fast"]))
+        game_system.design.append(self.Box([6 * w, 12 * h, 9 * w, 18 * h], ["Brave and Fearless", "he never go back"]))
+        game_system.design.append(self.Box([3 * w, 18 * h, 6 * w, 24 * h], ["Only good", "at moving horizontally"]))
+        game_system.design.append(self.Box([6 * w, 18 * h, 9 * w, 24 * h], ["He bends time", "randomly"]))
 
         for number in range(4):
             self.Box.creating_text_box(self, number)
