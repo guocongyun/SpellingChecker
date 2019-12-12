@@ -1,4 +1,3 @@
-# added pause function
 from tkinter import *
 from random import *
 from PIL import Image, ImageTk
@@ -300,6 +299,37 @@ class Battle:
 
 class TextAdventure:
 
+    def generating_texture(self, change_color):
+        if self.theme == []:
+            styles = [3, 2, 1, 1, 3, 2, 1, 6, 0, 0, 0, 3, 5, 4]
+            random = randint(0, 6)
+            texture_num_a = styles[random] + 1
+            texture_num_b = styles[-random - 1] + 1
+            while texture_num_a == texture_num_b:
+                texture_num_a = randint(0, 4)
+            self.theme.append(texture_num_a)
+            self.theme.append(texture_num_b)
+
+        self.texture_a = Image.open("tile_" + str(self.theme[0]) + "_full.png")
+        self.texture_b = Image.open("tile_" + str(self.theme[1]) + "_full.png")
+        self.texture_a = ImageTk.PhotoImage(self.texture_a)
+        self.texture_b = ImageTk.PhotoImage(self.texture_b)
+        count = 0
+        for number in range(int(window_height / GameSystem.texture_size[1])):
+
+            # print(int(window_width / GameSystem.texture_size[0]))
+            height = GameSystem.texture_size[1] * number
+            if int(window_width / GameSystem.texture_size[0]) % 2 == 0:
+                count += 1
+            for number in range(int(window_width / GameSystem.texture_size[0])):
+                width = GameSystem.texture_size[0] * number
+                count += 1
+                if count % 2 == 0:
+                    canvas.tag_lower(canvas.create_image(width, height, image=self.texture_a, anchor=NW))
+                else:
+                    canvas.tag_lower(canvas.create_image(width, height, image=self.texture_b, anchor=NW))
+        return self.texture_b, self.texture_a
+
     def generating_story(self):
         try:
             canvas.delete(game_system.image_identifier)
@@ -467,6 +497,7 @@ class Tutorial(TextAdventure):
     def __init__(self, battle, image_file, text, choices):
         super().__init__(battle, image_file, text, choices)
 
+        GameSystem.texture_size = [200, 200]
 
 
 class GameSystem:
@@ -545,8 +576,15 @@ class GameSystem:
 
     def selecting(self):
         self.text_adventure.image = self.text_adventure.generating_story()
+        self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
+            True)
+
+    def menu(self):
+        self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
+            True)
 
     def __init__(self, battle, text_adventure):
+        self.texture_size = [200, 200]
         self.zoom_ratio = [1, 1]
         self.scale_factor = self.zoom_ratio[1] * window_height / 1000
         self.battle = battle
@@ -578,6 +616,8 @@ choices = ["Please choose a character", "Please choose a character", "Please cho
 textadventure = Tutorial(battle, image_file, text, choices)
 game_system = GameSystem(battle, textadventure)
 game_system.text_adventure.image = game_system.text_adventure.generating_story()
+game_system.text_adventure.texture_a, game_system.text_adventure.texture_b = game_system.text_adventure.generating_texture(
+    True)
 # scaling
 # main system
 # update
