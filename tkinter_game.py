@@ -139,9 +139,9 @@ class Battle:
     def enemy_recolor(self):
         for number in range(len(game_system.character) - 1):
             enemy_number = number + 1
-            if self.ability == "stop":
+            if game_system.pause or self.ability == "stop":
                 canvas.itemconfig(game_system.character[enemy_number].identifier, fill="grey")
-            if self.ability != "stop":
+            if not game_system.pause and self.ability != "stop":
                 canvas.itemconfig(game_system.character[enemy_number].identifier,
                                   fill=game_system.character[enemy_number].color)
             if game_system.character[enemy_number].character_size < game_system.character[0].character_size:
@@ -238,31 +238,32 @@ class Battle:
             canvas.create_text(6 * w, 15 * h, fill="white", font="Times 30 bold", text="YOU LOSE", anchor=CENTER)
 
     def character_movement(self):
-        self.check_character_boarder()
-        if self.direction == "left":
-            canvas.move(game_system.character[0].identifier,
-                        game_system.scale_factor * self.collide[0] * -game_system.character[0].character_attribute[
-                            1], 0)
-        elif self.direction == "right":
-            canvas.move(game_system.character[0].identifier,
-                        game_system.scale_factor * self.collide[1] * game_system.character[0].character_attribute[
-                            3], 0)
-        elif self.direction == "up":
-            canvas.move(game_system.character[0].identifier, 0,
-                        game_system.scale_factor * self.collide[2] * -game_system.character[0].character_attribute[
-                            0])
-        elif self.direction == "down":
-            canvas.move(game_system.character[0].identifier, 0,
-                        game_system.scale_factor * self.collide[3] * game_system.character[0].character_attribute[
-                            2])
-            # repeat movement
-        self.collide = [1, 1, 1, 1]
+        if not game_system.pause:
+            self.check_character_boarder()
+            if self.direction == "left":
+                canvas.move(game_system.character[0].identifier,
+                            game_system.scale_factor * self.collide[0] * -game_system.character[0].character_attribute[
+                                1], 0)
+            elif self.direction == "right":
+                canvas.move(game_system.character[0].identifier,
+                            game_system.scale_factor * self.collide[1] * game_system.character[0].character_attribute[
+                                3], 0)
+            elif self.direction == "up":
+                canvas.move(game_system.character[0].identifier, 0,
+                            game_system.scale_factor * self.collide[2] * -game_system.character[0].character_attribute[
+                                0])
+            elif self.direction == "down":
+                canvas.move(game_system.character[0].identifier, 0,
+                            game_system.scale_factor * self.collide[3] * game_system.character[0].character_attribute[
+                                2])
+                # repeat movement
+            self.collide = [1, 1, 1, 1]
         canvas.after(game_system.character[0].character_attribute[4], self.character_movement)
 
     def enemy_movement(self):
         self.check_enemy_boarder()
         print(game_system.scale_factor)
-        if self.ability != "stop":
+        if not game_system.pause and self.ability != "stop":
             for character in range(len(game_system.character) - 1):
                 enemy = character + 1
                 canvas.move(game_system.character[enemy].identifier,
@@ -502,6 +503,8 @@ class GameSystem:
             self.battle.key[3] = 1
         elif event.keysym == "c":
             game_system.cheat = not game_system.cheat
+        elif event.keysym == "space":
+            game_system.pause = not game_system.pause
             self.enemy_recolor()
 
     def key_released(self, event):
@@ -556,6 +559,7 @@ class GameSystem:
         self.design = []
         self.cheat = False
         self.life = 100 * self.difficulty
+        self.pause = False
         # self.deactivate_mouse()
         self.activate_keyboard()
         self.activate_mouse()
