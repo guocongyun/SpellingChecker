@@ -170,7 +170,7 @@ class Battle:
             if position_i[0] < position[2] and position_i[2] > position[0] and position_i[1] < position[
                 3] and position_i[3] > position[1]:
                 if game_system.character[character_i].character_size < game_system.character[
-                    0].character_size :
+                    0].character_size or game_system.cheat == True:
                     canvas.delete(game_system.character[character_i].identifier)
                     game_system.character.remove(game_system.character[character_i])
                     self.character_growth()
@@ -214,7 +214,7 @@ class Battle:
                                 position_j[3] and position_i[3] > position_j[1]:
                             if character_j == 0:
                                 if game_system.character[character_i].character_size < game_system.character[
-                                    character_j].character_size:
+                                    character_j].character_size or game_system.cheat == True:
                                     canvas.delete(game_system.character[character_i].identifier)
                                     game_system.character.remove(game_system.character[character_i])
                                     removed_character += 1
@@ -500,6 +500,9 @@ class GameSystem:
         elif event.keysym == "Down":
             self.battle.direction = "down"
             self.battle.key[3] = 1
+        elif event.keysym == "c":
+            game_system.cheat = not game_system.cheat
+            self.enemy_recolor()
 
     def key_released(self, event):
         if sum(self.battle.key) <= 1:
@@ -551,6 +554,7 @@ class GameSystem:
         self.character = []
         self.xy = [[], []]
         self.design = []
+        self.cheat = False
         self.life = 100 * self.difficulty
         # self.deactivate_mouse()
         self.activate_keyboard()
