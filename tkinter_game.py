@@ -1,3 +1,4 @@
+# added pause function
 from tkinter import *
 from random import *
 from PIL import Image, ImageTk
