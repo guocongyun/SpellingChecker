@@ -87,7 +87,7 @@ class Battle:
             self.character_height = character_size ** (1 / 2)
             self.character_width = character_size ** (1 / 2)
             self.character_size = character_size
-            self.color = "violet"
+            self.color = "#cc33ff"
 
     class WeakEnemy(NormalEnemy):
         def __init__(self, character_size):
@@ -100,32 +100,32 @@ class Battle:
     class HorizontalEnemy(NormalEnemy):
         def __init__(self, character_size):
             super().__init__(character_size)
-            x = randint(50, 200) / 400
-            y = randint(50, 200) / 25
+            x = 0.5
+            y = 2
             self.character_attribute = [x, y]
-            self.color = "red"
+            self.color = "#ff0000"
 
     class VerticalEnemy(NormalEnemy):
         def __init__(self, character_size):
             super().__init__(character_size)
-            x = randint(50, 200) / 400
-            y = randint(50, 200) / 25
+            x = 2
+            y = 0.5
             self.character_attribute = [x, y]
-            self.color = "green"
+            self.color = "#ff6600"
 
     class TallEnemy(NormalEnemy):
         def __init__(self, character_size):
             super().__init__(character_size)
             self.character_height = 3 * (character_size / 3) ** (1 / 2)
             self.character_width = (character_size / 3) ** (1 / 2)
-            self.color = "violet"
+            self.color = "#cc99ff"
 
     class WideEnemy(NormalEnemy):
         def __init__(self, character_size):
             super().__init__(character_size)
             self.character_height = (character_size / 3) ** (1 / 2)
             self.character_width = 3 * (character_size / 3) ** (1 / 2)
-            self.color = "violet"
+            self.color = "#9900cc"
 
     class InvisibleEnemy(NormalEnemy):
         def __init__(self, character_size):
@@ -135,10 +135,10 @@ class Battle:
     class BetterEnemy(NormalEnemy):
         def __init__(self, character_size):
             super().__init__(character_size)
-            x = randint(50, 200) / 50
-            y = randint(50, 200) / 50
+            x = 2
+            y = 2
             self.character_attribute = [x, y]
-            self.color = "blue"
+            self.color = "#ff0066"
 
     class StupidEnemy(NormalEnemy):
         def __init__(self, character_size):
@@ -162,13 +162,12 @@ class Battle:
             x = 5
             y = 5
             self.character_attribute = [x, y]
-            color = ["pink", "grey", "orange"]
-            self.color = color[randint(0, 2)]
+            self.color = "#ff99cc"
 
     class TrickyEnemy(NormalEnemy):
         def __init__(self, character_size):
             super().__init__(character_size)
-            self.color = "#ffffcc"
+            self.color = "#ffff99"
 
     class WeirdEnemy(NormalEnemy):
         def __init__(self, character_size):
@@ -180,7 +179,7 @@ class Battle:
                 x = randint(0, 8)
                 y = 0
             self.character_attribute = [x, y]
-            self.color = "#b3ffff"
+            self.color = "grey"
 
     def enemy_creation(self):
         number_of_enemy = game_system.level * 2
@@ -260,7 +259,7 @@ class Battle:
                 if enemy.color == "":
                     enemy.identifier = canvas.create_rectangle(enemy.xy, width=3)
                 elif enemy.color == "Trap":
-                    enemy.identifier = canvas.create_rectangle(enemy.xy, width=0)
+                    enemy.identifier = canvas.create_rectangle(enemy.xy, width=1)
                 else:
                     enemy.identifier = canvas.create_rectangle(enemy.xy, fill=enemy.color)
                 game_system.character.append(enemy)
@@ -614,7 +613,7 @@ class TextAdventure:
         game_system.character[0].identifier = (canvas.create_rectangle(game_system.character[0].xy, fill="white"))
         game_system.character[0].ability = "Teleport"
 
-        game_system.character.append(self.Player(900, 900 ** (1 / 2), 900 ** (1 / 2), [5, 3, 0, 3, 10]))
+        game_system.character.append(self.Player(900, 900 ** (1 / 2), 900 ** (1 / 2), [6, 4, 1, 4, 10]))
         game_system.character[1].xy = [7.5 * w - game_system.character[1].character_width / 2,
                                        13.5 * h,
                                        7.5 * w + game_system.character[1].character_width / 2,
@@ -622,7 +621,7 @@ class TextAdventure:
         game_system.character[1].identifier = (canvas.create_oval(game_system.character[1].xy, fill="white"))
         game_system.character[1].ability = None
 
-        game_system.character.append(self.Player(900, 3 * 300 ** (1 / 2), 300 ** (1 / 2), [1, 3, 1, 3, 10]))
+        game_system.character.append(self.Player(900, 3 * 300 ** (1 / 2), 300 ** (1 / 2), [1, 5, 1, 5, 10]))
         game_system.character[2].xy = [4.5 * w - game_system.character[2].character_width / 2,
                                        19.5 * h,
                                        4.5 * w + game_system.character[2].character_width / 2,
@@ -630,7 +629,7 @@ class TextAdventure:
         game_system.character[2].identifier = (canvas.create_rectangle(game_system.character[2].xy, fill="white"))
         game_system.character[2].ability = None
 
-        game_system.character.append(self.Player(900, 900 ** (1 / 2), 900 ** (1 / 2), [1.5, 1.5, 1.5, 1.5, 10]))
+        game_system.character.append(self.Player(900, 900 ** (1 / 2), 900 ** (1 / 2), [2, 2, 2, 2, 10]))
         game_system.character[3].xy = [7.5 * w - game_system.character[3].character_width / 2,
                                        19.5 * h,
                                        7.5 * w + game_system.character[3].character_width / 2,
@@ -701,6 +700,12 @@ class GameSystem:
             self.battle.key[3] = 1
         elif event.keysym == "c":
             game_system.cheat = not game_system.cheat
+        elif event.keysym == "s":
+            game_system.score = game_system.score + 10
+            self.battle.life = self.battle.generating_statistic()
+        elif event.keysym == "h":
+            game_system.life = game_system.life + 1
+            self.battle.life = self.battle.generating_statistic()
         elif event.keysym == "space":
             self.pause_count = 0
             self.pausing()
@@ -820,7 +825,7 @@ class GameSystem:
             self.player_choice = int(character[5])
             if self.level < int(character[6]):
                 self.level = int(character[6])
-            if self.level < int(character[0]):
+            if self.score < int(character[0]):
                 self.score = int(character[0])
             self.text_adventure.character_creation()
             self.deactivate_mouse()
@@ -869,6 +874,34 @@ class GameSystem:
                     self.game_setup()
                     self.menu()
                 self.you_lost += 1
+            if self.level >= 13 and self.final_message == "":
+                self.final_message = canvas.create_text(6 * w, 15 * h, text="YOU WIN", fill="white", font="times 40 bold italic")
+                self.win = False
+                self.score = int(self.score) + 10
+                canvas.delete(game_system.character[0].identifier)
+                canvas.delete(game_system.level_identifier)
+                canvas.delete(game_system.score_identifier)
+                for number in range(len(self.textures)):
+                    canvas.delete(self.textures[number])
+                self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
+                    True)
+                game_system.character = []
+                for number in range(len(game_system.life_identifier)):
+                    canvas.delete(game_system.life_identifier[number])
+                try:
+                    for number in range(len(game_system.character)):
+                        if number != game_system.player_choice:
+                            canvas.delete(game_system.character[number].identifier)
+                except:
+                    pass
+            if self.level >= 13:
+                self.you_win += 1
+            if self.you_win == 15:
+                canvas.delete(self.final_message)
+                self.lose = True
+                self.level = 1
+                self.game_setup()
+                self.menu()
             if self.win:
                 self.score = int(self.score) + 10
                 self.win = False
@@ -884,32 +917,6 @@ class GameSystem:
                     canvas.delete(game_system.life_identifier[number])
                 self.level = self.level + 1
                 self.play(True)
-            if self.level >= 13 and self.final_message == "":
-                self.final_message = canvas.create_text(6 * w, 15 * h, text="YOU WIN", fill="white", font="times 40 bold italic")
-            if self.level >= 13:
-                self.you_win += 1
-            if self.you_win == 15:
-                print("asdf")
-                canvas.delete(self.final_message)
-                self.score = int(self.score) + 10
-                self.win = False
-                canvas.delete(game_system.character[0].identifier)
-                canvas.delete(game_system.level_identifier)
-                canvas.delete(game_system.score_identifier)
-                for number in range(len(self.textures)):
-                    canvas.delete(self.textures[number])
-                self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
-                    True)
-                try:
-                    for number in range(len(game_system.character)):
-                        if number != game_system.player_choice:
-                            canvas.delete(game_system.character[number].identifier)
-                except:
-                    pass
-                self.lose = True
-                self.level = 1
-                self.game_setup()
-                self.menu()
         canvas.after(500, self.check_game_status)
 
     def menu(self):
@@ -1052,15 +1059,16 @@ battle = Battle()
 text_adventure = TextAdventure(battle)
 game_system = GameSystem(battle, text_adventure)
 
-
+# ball dissappear
 # exit function
-# pause 3,2,1
 # collision bugs
 # scoring bugs
 # save and quit
-# better color
 # double running play
+
+#checked
+# better color
 # bondary downward
-# ball dissappear
+# pause 3,2,1
 
 window.mainloop()
