@@ -332,7 +332,11 @@ class TextAdventure:
 
         self.texture_a = Image.open("tile_" + str(self.theme[0]) + "_full.png")
         self.texture_b = Image.open("tile_" + str(self.theme[1]) + "_full.png")
+        self.texture_a = self.texture_a.resize((int(GameSystem.texture_size[0]), int(GameSystem.texture_size[1])),
+                                               Image.ANTIALIAS)
         self.texture_a = ImageTk.PhotoImage(self.texture_a)
+        self.texture_b = self.texture_b.resize((int(GameSystem.texture_size[0]), int(GameSystem.texture_size[1])),
+                                               Image.ANTIALIAS)
         self.texture_b = ImageTk.PhotoImage(self.texture_b)
         count = 0
         for number in range(int(window_height / GameSystem.texture_size[1])):
@@ -522,6 +526,29 @@ class Tutorial(TextAdventure):
 
 class GameSystem:
 
+    def resize_canvas(self, event):
+        global window_height, window_width, w, h
+        GameSystem.pause = True
+        window_ratio = window_width / window_height
+        self.zoom_ratio = [event.height * window_ratio / window_width, event.height / window_height]
+        window_height = event.height
+        window_width = event.height * window_ratio
+        GameSystem.texture_size = [window_width / 4, window_height / 5]
+        canvas.addtag_all("all")
+        canvas.config(width=window_width, height=window_height)
+        canvas.scale("all", 0, 0, game_system.zoom_ratio[0], game_system.zoom_ratio[1])
+        # center_width = screen_width / 2 - window_width / 2
+        # center_height = 0
+        # window.geometry("%dx%d+%d+%d" % (window_width, window_height, center_width, center_height))
+
+        w = window_width / 12
+        h = window_height / 30
+
+        # self.image = self.generating_story()
+        self.scale_factor = self.zoom_ratio[1] * window_height / 1000
+        self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(False)
+        GameSystem.pause = False
+
     def activate_keyboard(self):
         canvas.bind("<KeyPress>", self.key_pressed)
         canvas.bind("<KeyRelease>", self.key_released)
@@ -627,6 +654,7 @@ class GameSystem:
             True)
 
     def __init__(self, battle, text_adventure):
+        canvas.bind("<Configure>", self.resize_canvas)
         self.texture_size = [200, 200]
         self.zoom_ratio = [1, 1]
         self.scale_factor = self.zoom_ratio[1] * window_height / 1000
