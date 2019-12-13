@@ -337,9 +337,9 @@ class Battle:
                           position[3])
         elif position[3] > window_height:
             canvas.coords(game_system.character[0].identifier, position[0],
-                          8 * h + game_system.character[0].character_height,
+                          game_system.character[0].character_height,
                           position[2],
-                          8 * h)
+                          0)
         elif position[1] < 0:
             canvas.coords(game_system.character[0].identifier, position[0], window_height, position[2],
                           window_height - game_system.character[0].character_height)
@@ -702,10 +702,43 @@ class GameSystem:
         elif event.keysym == "c":
             game_system.cheat = not game_system.cheat
         elif event.keysym == "space":
-            game_system.pause = not game_system.pause
-            self.battle.enemy_recolor()
+            self.pause_count = 0
+            self.pausing()
         elif event.keysym == "b":
             self.screen_shot = self.boss_key()
+
+    def pausing(self):
+        try:
+            canvas.delete(self.pause_text)
+        except:
+            pass
+
+
+        if self.pause_count > 3:
+            self.pause_text = ""
+        if self.pause_count == 3:
+            game_system.pause = not game_system.pause
+            try:
+                self.battle.enemy_recolor()
+            except:
+                pass
+            if game_system.pause == True:
+                self.pause_text = canvas.create_text(6 * w, 6 * h, text="PAUSED",
+                                                 font="times 30 bold italic", fill="white")
+            elif game_system.pause == False:
+                self.pause_text = canvas.create_text(6 * w, 6 * h, text="UNPAUSE",
+                                                 font="times 30 bold italic", fill="white")
+            self.pause_count += 1
+
+        if 0 <= self.pause_count < 3:
+            self.pause_text = canvas.create_text(6*w,6*h,text=str(3-self.pause_count), font="times 30 bold italic",fill="white")
+            self.pause_count += 1
+
+        if self.pause_text != "":
+            canvas.after(1000, self.pausing)
+
+
+
 
     def key_released(self, event):
         if sum(self.battle.key) <= 1:
@@ -949,6 +982,8 @@ class GameSystem:
         self.identifier.append(canvas.create_window(7.5 * w, 28 * h, window=saved_game, width=1.5 * w, height=0.75 * h))
 
     def game_setup(self):
+        self.pause_count = 0
+        self.pause_text = ""
         self.you_lost = 0
         self.final_message = ""
         self.you_win = 0
@@ -969,6 +1004,8 @@ class GameSystem:
         self.user_name = "BoB"
 
     def __init__(self, battle, text_adventure):
+        self.pause_count = 0
+        self.pause_text = ""
         self.you_lost = 0
         self.final_message = ""
         self.you_win = 0
