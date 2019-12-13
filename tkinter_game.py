@@ -1,3 +1,4 @@
+import os
 from tkinter import *
 from random import *
 from PIL import Image, ImageTk
@@ -9,7 +10,6 @@ window = Tk()
 window.title("tkintergame")
 screen_width = window.winfo_screenwidth()
 screen_height = 1000
-print(screen_height)
 window_width = 800
 window_height = screen_height
 center_width = screen_width / 2 - window_width / 2
@@ -33,12 +33,12 @@ class Battle:
         # life = ImageTk.PhotoImage(self.life)
         game_system.life_identifier = []
         for number in range(game_system.life):
-            game_system.life_identifier.append(
-                canvas.tag_raise(canvas.create_image(h + number * 30, h, image=self.life, anchor=NW)))
+            game_system.life_identifier.append(canvas.tag_raise(canvas.create_image(h + number * 30,  h, image=self.life, anchor=NW)))
 
-        text = "Score : " + str(game_system.score)
         game_system.score_identifier = canvas.create_text(window_width - 100, h, fill="white", font="Times 10 bold",
-                                                          text=text, anchor=NW)
+                                                          text="Score : " + str(game_system.score), anchor=NW)
+        game_system.level_identifier = canvas.create_text(6*w, h, fill="white", font="Times 10 bold",
+                                                          text="Level-" + str(game_system.level), anchor=NW)
 
         return self.life
 
@@ -253,44 +253,47 @@ class Battle:
         for number in range(len(game_system.life_identifier)):
             canvas.delete(game_system.life_identifier[number])
         canvas.delete(game_system.score_identifier)
+        canvas.delete(game_system.level_identifier)
         self.life = self.generating_statistic()
-        if game_system.life == 0:
-            canvas.create_text(6 * w, 15 * h, fill="white", font="Times 30 bold", text="YOU LOSE", anchor=CENTER)
+        if game_system.life <= 0:
+            game_system.lose = True
 
     def character_movement(self):
-        if not game_system.pause:
-            self.check_character_boarder()
-            if self.direction == "left":
-                canvas.move(game_system.character[0].identifier,
-                            game_system.scale_factor * self.collide[0] * -game_system.character[0].character_attribute[
-                                1], 0)
-            elif self.direction == "right":
-                canvas.move(game_system.character[0].identifier,
-                            game_system.scale_factor * self.collide[1] * game_system.character[0].character_attribute[
-                                3], 0)
-            elif self.direction == "up":
-                canvas.move(game_system.character[0].identifier, 0,
-                            game_system.scale_factor * self.collide[2] * -game_system.character[0].character_attribute[
-                                0])
-            elif self.direction == "down":
-                canvas.move(game_system.character[0].identifier, 0,
-                            game_system.scale_factor * self.collide[3] * game_system.character[0].character_attribute[
-                                2])
-                # repeat movement
-            self.collide = [1, 1, 1, 1]
-        canvas.after(game_system.character[0].character_attribute[4], self.character_movement)
+        if game_system.game_running:
+            if not game_system.pause:
+                self.check_character_boarder()
+                if self.direction == "left":
+                    canvas.move(game_system.character[0].identifier,
+                                game_system.scale_factor * self.collide[0] * -game_system.character[0].character_attribute[
+                                    1], 0)
+                elif self.direction == "right":
+                    canvas.move(game_system.character[0].identifier,
+                                game_system.scale_factor * self.collide[1] * game_system.character[0].character_attribute[
+                                    3], 0)
+                elif self.direction == "up":
+                    canvas.move(game_system.character[0].identifier, 0,
+                                game_system.scale_factor * self.collide[2] * -game_system.character[0].character_attribute[
+                                    0])
+                elif self.direction == "down":
+                    canvas.move(game_system.character[0].identifier, 0,
+                                game_system.scale_factor * self.collide[3] * game_system.character[0].character_attribute[
+                                    2])
+                    # repeat movement
+                self.collide = [1, 1, 1, 1]
+            canvas.after(game_system.character[0].character_attribute[4], self.character_movement)
 
     def enemy_movement(self):
-        self.check_enemy_boarder()
-        print(game_system.scale_factor)
-        if not game_system.pause and self.ability != "stop":
-            for character in range(len(game_system.character) - 1):
-                enemy = character + 1
-                canvas.move(game_system.character[enemy].identifier,
-                            game_system.scale_factor * game_system.character[enemy].character_attribute[0],
-                            game_system.scale_factor * game_system.character[enemy].character_attribute[1])
-
-        canvas.after(game_system.character[1].character_attribute[2], self.enemy_movement)
+        if game_system.game_running:
+            self.check_enemy_boarder()
+            if not game_system.pause and self.ability != "stop":
+                for character in range(len(game_system.character) - 1):
+                    enemy = character + 1
+                    canvas.move(game_system.character[enemy].identifier,
+                                game_system.scale_factor * game_system.character[enemy].character_attribute[0],
+                                game_system.scale_factor * game_system.character[enemy].character_attribute[1])
+            if len(game_system.character) == 1:
+                game_system.win = True
+            canvas.after(game_system.character[1].character_attribute[2], self.enemy_movement)
 
     def character_ability(self):
         if game_system.character[0].ability == "bend_time":
@@ -341,7 +344,7 @@ class TextAdventure:
         count = 0
         for number in range(int(window_height / GameSystem.texture_size[1])):
 
-            # print(int(window_width / GameSystem.texture_size[0]))
+            #
             height = GameSystem.texture_size[1] * number
             if int(window_width / GameSystem.texture_size[0]) % 2 == 0:
                 count += 1
@@ -363,8 +366,8 @@ class TextAdventure:
         # image = Image.open(self.image_file)
         # image = image.subsample(3)
         # game_system.image_identifier = (canvas.create_image(h, h, image=image, anchor=NW))
-        game_system.story_identifier = (canvas.create_text(window_width / 2 + h, h, fill="white", font="Times 10 bold",
-                                                           text=self.text, anchor=NW))
+        # game_system.story_identifier = (canvas.create_text(window_width / 2 + h, h, fill="white", font="Times 10 bold",
+        #                                                    text=self.text, anchor=NW))
         # return image
 
     # def generate_decisions(self):
@@ -390,19 +393,27 @@ class TextAdventure:
     #                                    font="Times 10", text=self.choices[i]))
 
     def clear_screen(self):
-        for number in range(len(game_system.design)):
-            canvas.delete(game_system.design[number].identifier)
-            canvas.delete(game_system.design[number].identifier_text)
-        for number in range(len(game_system.character)):
-            if number != game_system.player_choice:
-                canvas.delete(game_system.character[number].identifier)
-        game_system.character = [game_system.character[game_system.player_choice]]
-
-    def light_area(self, list, option):
-        canvas.itemconfigure(list[option], fill="red")
-
-    def dim_area(self, list, option):
-        canvas.itemconfigure(list[option], fill="grey")
+        try:
+            for number in range(len(game_system.character)):
+                if number != game_system.player_choice:
+                    canvas.delete(game_system.character[number].identifier)
+            game_system.character = [game_system.character[game_system.player_choice]]
+        except:
+            pass
+        try:
+            for number in range(len(game_system.design)):
+                canvas.delete(game_system.design[number].identifier)
+                try:
+                    canvas.delete(game_system.design[number].identifier_text)
+                except:
+                    pass
+        except:
+            pass
+        try:
+            for number in range(len(game_system.identifier)):
+                canvas.delete(game_system.identifier[number])
+        except:
+            pass
 
     def click_event(self, event):
         x = event.x
@@ -412,18 +423,14 @@ class TextAdventure:
             if game_system.design[number].xy[0] <= x <= game_system.design[number].xy[2] and \
                     game_system.design[number].xy[
                         1] <= y <= game_system.design[number].xy[3]:
-                self.light_area(TextAdventure.decisions, number)
-                canvas.after(500, self.dim_area, TextAdventure.decisions, number)
-
+                game_system.game_running = True
                 self.clear_screen(number)
                 self.deactivate_mouse()
                 self.battle.move_start_position()
 
-    def __init__(self, battle, image_file, text, choices):
+    def __init__(self, battle):
         self.theme = []
         self.battle = battle
-        self.image_file = image_file
-        self.text = text
         self.story = []
         self.choices = choices
         self.decisions = []
@@ -501,6 +508,7 @@ class Tutorial(TextAdventure):
         game_system.character[3].ability = "bend_time"
 
     def generating_story(self):
+
         try:
             for number in range(len(game_system.design)):
                 canvas.delete(game_system.design[number].identifier)
@@ -518,8 +526,8 @@ class Tutorial(TextAdventure):
         self.character_creation()
         return super().generating_story()
 
-    def __init__(self, battle, image_file, text, choices):
-        super().__init__(battle, image_file, text, choices)
+    def __init__(self, battle):
+        super().__init__(battle)
 
         GameSystem.texture_size = [200, 200]
 
@@ -543,8 +551,6 @@ class GameSystem:
 
         w = window_width / 12
         h = window_height / 30
-
-        # self.image = self.generating_story()
         self.scale_factor = self.zoom_ratio[1] * window_height / 1000
         self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(False)
         GameSystem.pause = False
@@ -565,7 +571,9 @@ class GameSystem:
                 game_system.player_choice = number
                 self.text_adventure.clear_screen()
                 self.deactivate_mouse()
+                self.activate_keyboard()
                 self.text_adventure.battle.move_start_position()
+
 
     def key_pressed(self, event):
         if event.keysym == "Left":
@@ -643,55 +651,133 @@ class GameSystem:
         canvas.unbind("<Right>")
         canvas.unbind("<Left>")
 
-    def selecting(self):
+    def play(self):
+        self.game_running = True
+        self.text_adventure.clear_screen()
         self.text_adventure.image = self.text_adventure.generating_story()
         self.battle.life = self.battle.generating_statistic()
         self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
             True)
+        self.check_game_status()
+
+    def check_game_status(self):
+        if self.win or self.lose:
+            self.game_running = False
+            self.text_adventure.clear_screen()
+            if self.lose or self.win:
+                canvas.delete(game_system.character[0].identifier)
+                canvas.delete(game_system.level_identifier)
+                canvas.delete(game_system.score_identifier)
+                game_system.character = []
+                self.user_name = self.entry.get()
+
+                self.leaders[int(self.score)] = self.user_name
+                self.leader_list.seek(0, os.SEEK_END)  # find the last line of the file
+                self.leader_list.write("\n" + str(self.score) + "\n" + str(self.user_name))
+                self.leader_list.close()
+                self.leader_list = open("player_records.txt", "r+")
+
+                self.game_setup()
+                self.menu()
+        if self.game_running:
+            canvas.after(1000,self.check_game_status)
 
     def menu(self):
+        self.activate_mouse()
         self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
             True)
 
+        button = Button(text='PLAY', command=self.play, font="Times 8")
+        self.entry = Entry(canvas)
+
+        if self.leaders == {}:
+            leaders = [line.rstrip("\n") for line in self.leader_list.readlines()]  # strip line breaks
+            for number in range(len(leaders)):
+                if number % 2 == 0:
+                    leaders[number] = int(leaders[number])
+            for number in range(int(len(leaders)/2)):
+                self.leaders[leaders[2*number]] = leaders[2*number + 1]
+        sorted_values = sorted(self.leaders.keys())
+
+        user_name = []
+        user_score = []
+        count = 0
+        if count < len(sorted_values):
+            for sorted_key in sorted_values:
+                user_name.append(self.leaders[sorted_key])
+                user_score.append(sorted_key)
+                count += 1
+        self.identifier.append(canvas.create_text(10.5*w, 3*h, text="F", font="Times 120 italic", fill="black"))
+        self.identifier.append(canvas.create_text(7.5*w, 3*h, text="D", font="Times 120 italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5*w, 3*h, text="S", font="Times 120 italic", fill="black"))
+        self.identifier.append(canvas.create_text(1.5*w, 3*h, text="A", font="Times 120 italic", fill="white"))
+        self.identifier.append(canvas.create_text(6*w, 9*h, text="LEADER BOARD", font="Times 30 italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5*w, 15*h, text="first place", font="Times 20 italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5*w, 20*h, text="second place", font="Times 15 italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5*w, 22*h, text="third place", font="Times 15 italic", fill="white"))
+        self.identifier.append(canvas.create_text(7.5*w, 15*h, text=str(user_name[-1]) + ": " + str(user_score[-1]), font="Times 15 italic", fill="white"))
+        self.identifier.append(canvas.create_text(7.5*w, 20*h, text=str(user_name[-2]) + ": " + str(user_score[-2]), font="Times 12 italic", fill="white"))
+        self.identifier.append (canvas.create_text(7.5*w, 22*h, text=str(user_name[-3]) + ": " + str(user_score[-3]), font="Times 12 italic", fill="white"))
+        self.identifier.append (canvas.create_text(4.5*w, 26.5*h, text="Your name is?", font="Times 12 italic", fill="white"))
+        self.identifier.append (
+            canvas.create_window(4.5*w, 27.5*h, window=self.entry, height=1*h, width=1.5*w))
+        self.identifier.append (canvas.create_window(7.5*w, 27*h, window=button, width =w, height= h))
+
+    def game_setup(self):
+        self.lose = False
+        self.win = False
+        self.game_running = False
+        self.entry = None
+        self.score = 0
+        self.difficulty = 1
+        self.level = 3
+        self.cheat = False
+        self.boss = False
+        self.pause = False
+        self.life = 5 * self.difficulty
+        self.user_name = "BoB"
+
     def __init__(self, battle, text_adventure):
+        self.lose = False
+        self.win = False
+        self.game_running = False
+        self.entry = None
+        self.score = 0
+        self.difficulty = 1
+        self.level = 3
+        self.cheat = False
+        self.boss = False
+        self.pause = False
+        self.life = 5 * self.difficulty
+        self.user_name = "BoB"
+
         canvas.bind("<Configure>", self.resize_canvas)
+        self.leader_list = open("player_records.txt", "r+")
+        self.entry = None
+        self.leaders = {}
         self.texture_size = [200, 200]
         self.zoom_ratio = [1, 1]
         self.scale_factor = self.zoom_ratio[1] * window_height / 1000
         self.battle = battle
         self.text_adventure = text_adventure
-        self.score = 0
         self.default_size = 900
-        self.difficulty = 1
-        self.level = 25
         self.character = []
         self.xy = [[], []]
         self.design = []
-        self.cheat = False
-        self.life = 100 * self.difficulty
+        self.identifier = []
         self.screen_shot = None
-        self.boss = False
-        self.pause = False
-        # self.deactivate_mouse()
         self.activate_keyboard()
-        self.activate_mouse()
-        # self.deactivate_keyboard()
-        # self.menu()
+        self.menu()
 
 
 battle = Battle()
 
-image_file = "forest.png"
-text = "Please select your character"
-choices = ["Please choose a character", "Please choose a character", "Please choose a character",
-           "Please choose a character"]
-
-textadventure = Tutorial(battle, image_file, text, choices)
-game_system = GameSystem(battle, textadventure)
-game_system.text_adventure.image = game_system.text_adventure.generating_story()
-game_system.battle.life = game_system.battle.generating_statistic()
-game_system.text_adventure.texture_a, game_system.text_adventure.texture_b = game_system.text_adventure.generating_texture(
-    True)
+text_adventure = Tutorial(battle)
+game_system = GameSystem(battle, text_adventure)
+# game_system.text_adventure.image = game_system.text_adventure.generating_story()
+# game_system.battle.life = game_system.battle.generating_statistic()
+# game_system.text_adventure.texture_a, game_system.text_adventure.texture_b = game_system.text_adventure.generating_texture(
+#     True)
 # scaling
 # main system
 # update
