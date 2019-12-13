@@ -687,7 +687,7 @@ class GameSystem:
         self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
             True)
 
-        button = Button(text='PLAY', command=self.play, font="Times 8")
+        button = Button(text='Begin adventure', command=self.play, font="Times 8")
         self.entry = Entry(canvas)
 
         if self.leaders == {}:
@@ -711,17 +711,17 @@ class GameSystem:
         self.identifier.append(canvas.create_text(7.5*w, 3*h, text="D", font="Times 120 italic", fill="white"))
         self.identifier.append(canvas.create_text(4.5*w, 3*h, text="S", font="Times 120 italic", fill="black"))
         self.identifier.append(canvas.create_text(1.5*w, 3*h, text="A", font="Times 120 italic", fill="white"))
-        self.identifier.append(canvas.create_text(6*w, 9*h, text="LEADER BOARD", font="Times 30 italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 15*h, text="first place", font="Times 20 italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 20*h, text="second place", font="Times 15 italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 22*h, text="third place", font="Times 15 italic", fill="white"))
-        self.identifier.append(canvas.create_text(7.5*w, 15*h, text=str(user_name[-1]) + ": " + str(user_score[-1]), font="Times 15 italic", fill="white"))
-        self.identifier.append(canvas.create_text(7.5*w, 20*h, text=str(user_name[-2]) + ": " + str(user_score[-2]), font="Times 12 italic", fill="white"))
-        self.identifier.append (canvas.create_text(7.5*w, 22*h, text=str(user_name[-3]) + ": " + str(user_score[-3]), font="Times 12 italic", fill="white"))
-        self.identifier.append (canvas.create_text(4.5*w, 26.5*h, text="Your name is?", font="Times 12 italic", fill="white"))
-        self.identifier.append (
-            canvas.create_window(4.5*w, 27.5*h, window=self.entry, height=1*h, width=1.5*w))
-        self.identifier.append (canvas.create_window(7.5*w, 27*h, window=button, width =w, height= h))
+        self.identifier.append(canvas.create_text(4.5*w, 9*h, text="LEADER", font="Times 20 bold italic", fill="white"))
+        self.identifier.append(canvas.create_text(7.5*w, 9*h, text="BOARD", font="Times 20 bold italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5*w, 14*h, text="First place", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(canvas.create_text(7.5*w, 14*h, text="Second place", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5*w, 20*h, text="Third place", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(canvas.create_text(7.5*w, 20*h, text="And you are", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5*w, 15.5*h, text=str(user_name[-1]) + " " + str(user_score[-1]), font="Times 13 italic", fill="white"))
+        self.identifier.append(canvas.create_text(7.5*w, 15.5*h, text=str(user_name[-2]) + " " + str(user_score[-2]), font="Times 13 italic", fill="white"))
+        self.identifier.append (canvas.create_text(4.5*w, 21.5*h, text=str(user_name[-3]) + " " + str(user_score[-3]), font="Times 13 italic", fill="white"))
+        self.identifier.append (canvas.create_window(7.5*w, 21*h, window=self.entry, height=0.75*h, width=2*w))
+        self.identifier.append (canvas.create_window(7.5*w, 22*h, window=button, width =1.5*w, height= 0.75*h))
 
     def game_setup(self):
         self.lose = False
