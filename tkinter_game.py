@@ -27,55 +27,47 @@ canvas.pack(fill="both", expand=TRUE)
 
 class Battle:
     def generating_statistic(self):
-        life = Image.open("pixel_heart.png")
-        self.life = ImageTk.PhotoImage(life)
-        # life = life.resize((int(GameSystem.texture_size[0]), int(GameSystem.texture_size[1])), Image.ANTIALIAS)
-        # life = ImageTk.PhotoImage(self.life)
-        game_system.life_identifier = []
+        try:
+            canvas.delete(game_system.score_identifier)
+        except:
+            pass
+        try:
+            canvas.delete(game_system.level_identifier)
+        except:
+            pass
+        try:
+            for number in range(len(game_system.life_identifier)):
+                canvas.delete(game_system.life_identifier[number])
+        except:
+            pass
+
+        self.life = Image.open("pixel_heart.png")
+        # self.life = life.resize((int(GameSystem.texture_size[0]), int(GameSystem.texture_size[1])), Image.ANTIALIAS)
+        self.life = ImageTk.PhotoImage(self.life)
+
         for number in range(game_system.life):
-            game_system.life_identifier.append(canvas.tag_raise(canvas.create_image(h + number * 30,  h, image=self.life, anchor=NW)))
+            game_system.life_identifier.append(
+                canvas.tag_raise(canvas.create_image(h + number * 30, h, image=self.life, anchor=NW)))
 
         game_system.score_identifier = canvas.create_text(window_width - 100, h, fill="white", font="Times 10 bold",
                                                           text="Score : " + str(game_system.score), anchor=NW)
-        game_system.level_identifier = canvas.create_text(6*w, h, fill="white", font="Times 10 bold",
+        game_system.level_identifier = canvas.create_text(6 * w, h, fill="white", font="Times 10 bold",
                                                           text="Level-" + str(game_system.level), anchor=NW)
 
         return self.life
 
     def move_start_position(self):
-        if game_system.save_game:
-
-            character_save = open("character_saves.txt", "r+")
-            character = [line.rstrip("\n") for line in character_save.readlines()]  # strip line breaks
-            game_system.score = int(character[0])
-            game_system.life = int(character[1])
-            self.start_position[0] = character[2]
-            self.start_position[1] = character[3]
-            character_save.close()
-            try:
-                for number in range(len(game_system.life_identifier)):
-                    canvas.delete(game_system.life_identifier[number])
-                canvas.delete(game_system.score_identifier)
-                canvas.delete(game_system.level_identifier)
-                self.life = self.generating_statistic()
-            except:
-                pass
-        else:
-            self.start_position = [6 * w - game_system.character[0].character_width / 2,
-                                   30 * h - game_system.character[0].character_height]
-
         self.position = canvas.coords(game_system.character[0].identifier)
-
-        if self.position[0] < float(self.start_position[0]) -2:
+        if (self.position[0] + self.position[2]) / 2 < float(self.start_position[0]) - 2:
             canvas.move(game_system.character[0].identifier, 1, 0)
             canvas.after(5, self.move_start_position)
-        elif self.position[0] > float(self.start_position[0]) +2:
+        elif (self.position[0] + self.position[2]) / 2 > float(self.start_position[0]) + 2:
             canvas.move(game_system.character[0].identifier, -1, 0)
             canvas.after(5, self.move_start_position)
-        elif self.position[1] < float(self.start_position[1]) -2:
+        elif (self.position[1] + self.position[3]) / 2 < float(self.start_position[1]) - 2:
             canvas.move(game_system.character[0].identifier, 0, 1)
             canvas.after(5, self.move_start_position)
-        elif self.position[1] > float(self.start_position[1]) +2:
+        elif (self.position[1] + self.position[3]) / 2 > float(self.start_position[1]) + 2:
             canvas.move(game_system.character[0].identifier, 0, -1)
             canvas.after(5, self.move_start_position)
         else:
@@ -86,14 +78,6 @@ class Battle:
             self.character_ability()
 
     class normal_enemy:
-
-        # def character_width(self):
-        #     character_width = self.character_size ** (1 / 2)
-        #     return character_width
-        #
-        # def character_height(self):
-        #     character_height = self.character_size ** (1 / 2)
-        #     return character_height
 
         def __init__(self, character_size):
             self.character_attribute = [1, 1, 3]
@@ -107,7 +91,7 @@ class Battle:
     #         self.character_size = GameSystem.character[0].character_width * GameSystem.character[0].character_height - 100
 
     def enemy_creation(self):
-        number_of_enemy = game_system.level  # randint(2,20)
+        number_of_enemy = game_system.level
         weak_enemy = 1 + int(number_of_enemy / 10)
         enemy_count = 0
         while enemy_count < number_of_enemy:
@@ -135,18 +119,11 @@ class Battle:
                 enemy.xy = enemy_position
                 enemy.identifier = canvas.create_rectangle(enemy.xy, fill=color)
                 game_system.character.append(enemy)
-                # GameSystem.characters.append(canvas.create_rectangle(GameSystem.xy[1][enemy_count + 1], fill=color))
-                # GameSystem.xy[1].append(enemy_position)
-                # GameSystem.characters.append(canvas.create_rectangle(GameSystem.xy[1][enemy_count + 1], fill=color))
-                # GameSystem.character_size.append(
-                #     [GameSystem.character[enemy_count].character_width, GameSystem.character[enemy_count].character_height])
-                # GameSystem.character_attribute.append(GameSystem.character[enemy_count])
                 enemy_count += 1
 
     def character_growth(self):
         game_system.score = game_system.score + 10
-        canvas.delete(game_system.score_identifier)
-        self.generating_statistic()
+        self.life = self.generating_statistic()
         game_system.character[0].character_size = game_system.character[
                                                       0].character_size * game_system.scale_factor + 100 * game_system.difficulty * game_system.scale_factor
         if game_system.player_choice == 0:
@@ -192,11 +169,10 @@ class Battle:
         position = canvas.coords(game_system.character[0].identifier)
         self.character_save.write(str(game_system.score))
         self.character_save.write("\n" + str(game_system.life))
-        self.character_save.write("\n" + str((position[0] + position[2])/2 * game_system.scale_factor))
-        self.character_save.write("\n" + str((position[1] + position[3])/2 * game_system.scale_factor))
+        self.character_save.write("\n" + str((position[0] + position[2]) / 2 * game_system.scale_factor))
+        self.character_save.write("\n" + str((position[1] + position[3]) / 2 * game_system.scale_factor))
         self.character_save.write("\n" + str(game_system.entry.get()))
         self.character_save.write("\n" + str(game_system.player_choice))
-
 
         self.character_save.close()
         if position[0] < 0:
@@ -249,7 +225,6 @@ class Battle:
             for number in range(4):
                 self.saved_file.write("\n" + str(position_i[number] * game_system.scale_factor))
 
-
             if position_i[0] <= 0:
                 game_system.character[character_i].character_attribute[0] = - \
                     game_system.character[character_i].character_attribute[0]
@@ -280,9 +255,6 @@ class Battle:
                                     break
                                 else:
                                     self.lose_life()
-                            # if position_j[0] <= position_i[0] < position_j[2] or position_j[0] <= position_i[2] < position_j[2]:
-                            #     if position_j[1] <= position_i[1] < position_j[3] or position_j[1] <= position_i[3] < position_j[3]:\
-                            # counts[character_i] += 1
                             count += 1
                             if count <= 1:
                                 game_system.character[character_i].character_attribute[0] = - \
@@ -293,10 +265,6 @@ class Battle:
 
     def lose_life(self):
         game_system.life = game_system.life - 1
-        for number in range(len(game_system.life_identifier)):
-            canvas.delete(game_system.life_identifier[number])
-        canvas.delete(game_system.score_identifier)
-        canvas.delete(game_system.level_identifier)
         self.life = self.generating_statistic()
         if game_system.life <= 0:
             game_system.lose = True
@@ -308,19 +276,23 @@ class Battle:
                 self.check_character_boarder()
                 if self.direction == "left":
                     canvas.move(game_system.character[0].identifier,
-                                game_system.scale_factor * self.collide[0] * -game_system.character[0].character_attribute[
+                                game_system.scale_factor * self.collide[0] * -
+                                game_system.character[0].character_attribute[
                                     1], 0)
                 elif self.direction == "right":
                     canvas.move(game_system.character[0].identifier,
-                                game_system.scale_factor * self.collide[1] * game_system.character[0].character_attribute[
+                                game_system.scale_factor * self.collide[1] *
+                                game_system.character[0].character_attribute[
                                     3], 0)
                 elif self.direction == "up":
                     canvas.move(game_system.character[0].identifier, 0,
-                                game_system.scale_factor * self.collide[2] * -game_system.character[0].character_attribute[
+                                game_system.scale_factor * self.collide[2] * -
+                                game_system.character[0].character_attribute[
                                     0])
                 elif self.direction == "down":
                     canvas.move(game_system.character[0].identifier, 0,
-                                game_system.scale_factor * self.collide[3] * game_system.character[0].character_attribute[
+                                game_system.scale_factor * self.collide[3] *
+                                game_system.character[0].character_attribute[
                                     2])
                     # repeat movement
                 self.collide = [1, 1, 1, 1]
@@ -330,15 +302,16 @@ class Battle:
         if game_system.game_running:
             self.check_enemy_boarder()
             if not game_system.pause and self.ability != "stop":
-                for character in range(len(game_system.character) - 1):
-                    enemy = character + 1
-                    canvas.move(game_system.character[enemy].identifier,
-                                game_system.scale_factor * game_system.character[enemy].character_attribute[0],
-                                game_system.scale_factor * game_system.character[enemy].character_attribute[1])
-            if len(game_system.character) == 1:
-                game_system.win = True
-                self.game_running = False
-            canvas.after(game_system.character[1].character_attribute[2], self.enemy_movement)
+                if len(game_system.character) == 1:
+                    game_system.win = True
+                    self.game_running = False
+                else:
+                    for character in range(len(game_system.character) - 1):
+                        enemy = character + 1
+                        canvas.move(game_system.character[enemy].identifier,
+                                    game_system.scale_factor * game_system.character[enemy].character_attribute[0],
+                                    game_system.scale_factor * game_system.character[enemy].character_attribute[1])
+                    canvas.after(game_system.character[1].character_attribute[2], self.enemy_movement)
 
     def character_ability(self):
         if game_system.character[0].ability == "bend_time":
@@ -355,7 +328,7 @@ class Battle:
             canvas.after(1000, self.character_ability)
 
     def __init__(self):
-        self.start_position = [0,0]
+        self.start_position = [6 * w, 29* h]
         self.position = []
         self.collide = [1, 1, 1, 1]
         self.key = [0, 0, 0, 0]
@@ -404,86 +377,34 @@ class TextAdventure:
         return self.texture_b, self.texture_a
 
     def generating_story(self):
-        try:
-            canvas.delete(game_system.image_identifier)
-            canvas.delete(game_system.story_identifier)
-        except:
-            pass
-        # image = Image.open(self.image_file)
-        # image = image.subsample(3)
-        # game_system.image_identifier = (canvas.create_image(h, h, image=image, anchor=NW))
-        # game_system.story_identifier = (canvas.create_text(window_width / 2 + h, h, fill="white", font="Times 10 bold",
-        #                                                    text=self.text, anchor=NW))
-        # return image
-
-    # def generate_decisions(self):
-    #     # choice 4 Box choices
-    #     for i in range(4):
-    #         if i < 2:
-    #             GameSystem.xy[0].append(
-    #                 [2 * w + i * 4 * w, 9 * h, 2 * w + (i + 1) * 4 * w,
-    #                  10 * h])
-    #             self.decisions.append(canvas.create_rectangle(GameSystem.xy[0][i], fill="grey", outline='black'))
-    #             self.decisions.append(
-    #                 canvas.create_text(w * 4 + i * w * 4, h / 2 + 9 * h,
-    #                                    fill="white",
-    #                                    font="Times 10", text=self.choices[i]))
-    #         else:
-    #             GameSystem.xy[0].append(
-    #                 [2 * w + (i - 2) * 4 * w, 10 * h, 2 * w + (i - 1) * 4 * w,
-    #                  11 * h])
-    #             self.decisions.append(canvas.create_rectangle(GameSystem.xy[0][i], fill="grey", outline='black'))
-    #             self.decisions.append(
-    #                 canvas.create_text(w * 4 + (i - 2) * w * 4, h / 2 + 10 * h,
-    #                                    fill="white",
-    #                                    font="Times 10", text=self.choices[i]))
+        if len(game_system.design) > 0:
+            for number in range(len(game_system.design)):
+                canvas.delete(game_system.design[number].identifier)
+                canvas.delete(game_system.design[number].identifier_text)
+                game_system.design = []
+        if len(game_system.character) > 0:
+            for number in range(len(game_system.character)):
+                canvas.delete(game_system.character[number].identifier)
+                game_system.character = []
 
     def clear_screen(self):
-        # try:
-
-        for number in range(len(game_system.character)):
-            if number != game_system.player_choice:
-                canvas.delete(game_system.character[number].identifier)
-        game_system.character = [game_system.character[game_system.player_choice]]
-        # except:
-        #     pass
-        try:
+        if len(game_system.character) > 0:
+            for number in range(len(game_system.character)):
+                if number != game_system.player_choice:
+                    canvas.delete(game_system.character[number].identifier)
+            if game_system.player_choice != "":
+                game_system.character = [game_system.character[game_system.player_choice]]
+        if len(game_system.design) > 0:
             for number in range(len(game_system.design)):
                 canvas.delete(game_system.design[number].identifier)
                 try:
                     canvas.delete(game_system.design[number].identifier_text)
                 except:
                     pass
-        except:
-            pass
-        try:
+        if len(game_system.identifier) > 0:
             for number in range(len(game_system.identifier)):
                 canvas.delete(game_system.identifier[number])
-        except:
-            pass
 
-    # def click_event(self, event):
-    #     x = event.x
-    #     y = event.y
-    #     history = []
-    #     for number in range(len(game_system.xy[0])):
-    #         if game_system.design[number].xy[0] <= x <= game_system.design[number].xy[2] and \
-    #                 game_system.design[number].xy[
-    #                     1] <= y <= game_system.design[number].xy[3]:
-    #             game_system.game_running = True
-    #             self.clear_screen(number)
-    #             self.deactivate_mouse()
-    #             self.battle.move_start_position()
-
-    def __init__(self, battle):
-        self.theme = []
-        self.battle = battle
-        self.story = []
-        self.choices = choices
-        self.decisions = []
-
-
-class Tutorial(TextAdventure):
     class Player:
         def __init__(self, size, width, height, attribute):
             self.character_size = size
@@ -554,43 +475,13 @@ class Tutorial(TextAdventure):
         game_system.character[3].identifier = (canvas.create_rectangle(game_system.character[3].xy, fill="white"))
         game_system.character[3].ability = "bend_time"
 
-    def generating_story(self):
-
-        try:
-            for number in range(len(game_system.design)):
-                canvas.delete(game_system.design[number].identifier)
-                canvas.delete(game_system.design[number].identifier_text)
-                game_system.design = []
-        except:
-            pass
-        try:
-            for number in range(len(game_system.character)):
-                canvas.delete(game_system.character[number].identifier)
-                game_system.character = []
-        except:
-            pass
-
-        if not game_system.save_game:
-            self.character_boxes()
-            self.character_creation()
-        else:
-            game_system.character = []
-            character_save = open("character_saves.txt", "r+")
-            character = [line.rstrip("\n") for line in character_save.readlines()]
-            game_system.player_choice = int(character[5])
-
-
-            character_save.close()
-            self.character_creation()
-            self.clear_screen()
-
-            self.battle.move_start_position()
-        return super().generating_story()
-
     def __init__(self, battle):
-        super().__init__(battle)
-
         GameSystem.texture_size = [200, 200]
+        self.theme = []
+        self.battle = battle
+        self.story = []
+        self.choices = choices
+        self.decisions = []
 
 
 class GameSystem:
@@ -606,9 +497,6 @@ class GameSystem:
         canvas.addtag_all("all")
         canvas.config(width=window_width, height=window_height)
         canvas.scale("all", 0, 0, game_system.zoom_ratio[0], game_system.zoom_ratio[1])
-        # center_width = screen_width / 2 - window_width / 2
-        # center_height = 0
-        # window.geometry("%dx%d+%d+%d" % (window_width, window_height, center_width, center_height))
 
         w = window_width / 12
         h = window_height / 30
@@ -633,9 +521,7 @@ class GameSystem:
                 self.text_adventure.clear_screen()
                 self.deactivate_mouse()
                 self.activate_keyboard()
-                self.text_adventure.battle.move_start_position()
-
-
+                self.battle.move_start_position()
 
     def key_pressed(self, event):
         if event.keysym == "Left":
@@ -716,13 +602,29 @@ class GameSystem:
     def play(self, saved_game):
         self.game_running = True
         self.save_game = saved_game
-        self.text_adventure.image = self.text_adventure.generating_story()
-        self.text_adventure.clear_screen()
-        self.battle.life = self.battle.generating_statistic()
-        self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
-            True)
+        if not self.save_game:
+            self.text_adventure.clear_screen()
+            self.text_adventure.character_boxes()
+            self.text_adventure.character_creation()
+        else:
+            self.character = []
+            character_save = open("character_saves.txt", "r+")
+            character = [line.rstrip("\n") for line in character_save.readlines()]
+            character_save.close()
 
+            self.score = int(character[0])
+            self.life = int(character[1])
+            self.battle.start_position[0] = float(character[2])
+            self.battle.start_position[1] = float(character[3])
+            self.battle.move_start_position()
+            self.player_choice = int(character[5])
 
+            self.text_adventure.character_creation()
+            self.deactivate_mouse()
+            self.text_adventure.clear_screen()
+            self.battle.life = self.battle.generating_statistic()
+            self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(True)
+        return self.battle.generating_statistic(), self.text_adventure.texture_a, self.text_adventure.texture_b
 
     def check_game_status(self):
         if self.game_running:
@@ -730,10 +632,12 @@ class GameSystem:
             if self.win or self.lose:
                 self.game_running = False
                 self.text_adventure.clear_screen()
-                if self.lose or self.win:
+                if self.lose:
                     canvas.delete(game_system.character[0].identifier)
                     canvas.delete(game_system.level_identifier)
                     canvas.delete(game_system.score_identifier)
+                    for number in range(len(game_system.life_identifier)):
+                        canvas.delete(game_system.life_identifier[number])
                     game_system.character = []
                     self.user_name = self.entry.get()
                     if self.user_name == "":
@@ -747,6 +651,8 @@ class GameSystem:
 
                     self.game_setup()
                     self.menu()
+
+
         canvas.after(1000, self.check_game_status)
 
     def menu(self):
@@ -754,8 +660,9 @@ class GameSystem:
         self.text_adventure.texture_a, self.text_adventure.texture_b = self.text_adventure.generating_texture(
             True)
 
-        new_game = Button(text='Begin adventure', command=lambda: self.play(False), font="Times 8")
-        saved_game = Button(text='Continue adventure', command=lambda: self.play(True), font="Times 8")
+        new_game = Button(text='Begin', command=lambda: self.play(False), font="Times 8")
+        saved_game = Button(text='Continue', command=lambda: self.play(True), font="Times 8")
+
         self.entry = Entry(canvas)
 
         if self.leaders == {}:
@@ -763,8 +670,8 @@ class GameSystem:
             for number in range(len(leaders)):
                 if number % 2 == 0:
                     leaders[number] = int(leaders[number])
-            for number in range(int(len(leaders)/2)):
-                self.leaders[leaders[2*number]] = leaders[2*number + 1]
+            for number in range(int(len(leaders) / 2)):
+                self.leaders[leaders[2 * number]] = leaders[2 * number + 1]
         sorted_values = sorted(self.leaders.keys())
 
         character_save = open("character_saves.txt", "r+")
@@ -778,33 +685,47 @@ class GameSystem:
                 user_name.append(self.leaders[sorted_key])
                 user_score.append(sorted_key)
                 count += 1
-        self.identifier.append(canvas.create_text(10.5*w, 3*h, text="F", font="Times 120 italic", fill="black"))
-        self.identifier.append(canvas.create_text(7.5*w, 3*h, text="D", font="Times 120 italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 3*h, text="S", font="Times 120 italic", fill="black"))
-        self.identifier.append(canvas.create_text(1.5*w, 3*h, text="A", font="Times 120 italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 9*h, text="LEADER", font="Times 20 bold italic", fill="white"))
-        self.identifier.append(canvas.create_text(7.5*w, 9*h, text="BOARD", font="Times 20 bold italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 14*h, text="First place", font="Times 15 bold italic", fill="white"))
-        self.identifier.append(canvas.create_text(7.5*w, 14*h, text="Second place", font="Times 15 bold italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 20*h, text="Third place", font="Times 15 bold italic", fill="white"))
-        self.identifier.append(canvas.create_text(7.5*w, 20*h, text="Forth place", font="Times 15 bold italic", fill="white"))
-        self.identifier.append(canvas.create_text(4.5*w, 15.5*h, text=str(user_name[-1]) + " " + str(user_score[-1]), font="Times 13 italic", fill="white"))
-        self.identifier.append(canvas.create_text(7.5*w, 15.5*h, text=str(user_name[-2]) + " " + str(user_score[-2]), font="Times 13 italic", fill="white"))
-        self.identifier.append (canvas.create_text(4.5*w, 21.5*h, text=str(user_name[-3]) + " " + str(user_score[-3]), font="Times 13 italic", fill="white"))
+        self.identifier.append(canvas.create_text(10.5 * w, 3 * h, text="F", font="Times 120 italic", fill="black"))
+        self.identifier.append(canvas.create_text(7.5 * w, 3 * h, text="D", font="Times 120 italic", fill="white"))
+        self.identifier.append(canvas.create_text(4.5 * w, 3 * h, text="S", font="Times 120 italic", fill="black"))
+        self.identifier.append(canvas.create_text(1.5 * w, 3 * h, text="A", font="Times 120 italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(4.5 * w, 9 * h, text="LEADER", font="Times 20 bold italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(7.5 * w, 9 * h, text="BOARD", font="Times 20 bold italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(4.5 * w, 14 * h, text="First place", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(7.5 * w, 14 * h, text="Second place", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(4.5 * w, 20 * h, text="Third place", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(7.5 * w, 20 * h, text="Forth place", font="Times 15 bold italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(4.5 * w, 15.5 * h, text=str(user_name[-1]) + " " + str(user_score[-1]),
+                               font="Times 13 italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(7.5 * w, 15.5 * h, text=str(user_name[-2]) + " " + str(user_score[-2]),
+                               font="Times 13 italic", fill="white"))
+        self.identifier.append(
+            canvas.create_text(4.5 * w, 21.5 * h, text=str(user_name[-3]) + " " + str(user_score[-3]),
+                               font="Times 13 italic", fill="white"))
         self.identifier.append(
             canvas.create_text(7.5 * w, 21.5 * h, text=str(user_name[-4]) + " " + str(user_score[-4]),
                                font="Times 13 italic", fill="white"))
         self.identifier.append(
             canvas.create_text(4.5 * w, 26 * h, text="And you are", font="Times 15 bold italic", fill="white"))
-        self.identifier.append (canvas.create_window(4.5 *w, 27*h, window=self.entry, height=0.75*h, width=2*w))
-        self.identifier.append (canvas.create_window(4.5 *w, 28*h, window=new_game, width =1.5*w, height= 0.75*h))
+        self.identifier.append(canvas.create_window(4.5 * w, 27 * h, window=self.entry, height=0.75 * h, width=2 * w))
+        self.identifier.append(canvas.create_window(4.5 * w, 28 * h, window=new_game, width=1.5 * w, height=0.75 * h))
 
         self.identifier.append(
             canvas.create_text(7.5 * w, 26 * h, text="Or you were", font="Times 15 bold italic", fill="white"))
-        self.identifier.append (canvas.create_text(7.5 *w, 27*h, text=str(character[4]), font="Times 13 bold italic", fill="white"))
-        self.identifier.append (canvas.create_window(7.5 *w, 28*h, window=saved_game, width =1.5*w, height= 0.75*h))
+        self.identifier.append(
+            canvas.create_text(7.5 * w, 27 * h, text=str(character[4]), font="Times 13 bold italic", fill="white"))
+        self.identifier.append(canvas.create_window(7.5 * w, 28 * h, window=saved_game, width=1.5 * w, height=0.75 * h))
 
     def game_setup(self):
+        self.life_identifier = []
         self.player_choice = ""
         self.lose = False
         self.win = False
@@ -820,6 +741,7 @@ class GameSystem:
         self.user_name = "BoB"
 
     def __init__(self, battle, text_adventure):
+        self.life_identifier = []
         self.player_choice = ""
         self.save_game = False
         self.lose = False
@@ -857,7 +779,7 @@ class GameSystem:
 
 battle = Battle()
 
-text_adventure = Tutorial(battle)
+text_adventure = TextAdventure(battle)
 game_system = GameSystem(battle, text_adventure)
 # game_system.text_adventure.image = game_system.text_adventure.generating_story()
 # game_system.battle.life = game_system.battle.generating_statistic()
