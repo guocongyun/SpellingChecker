@@ -78,16 +78,95 @@ class Battle:
             self.enemy_movement()
             self.character_ability()
 
-    class normal_enemy:
+    class NormalEnemy:
 
         def __init__(self, character_size):
-            self.character_attribute = [1, 1, 3]
+            x = randint(50, 200)/100
+            y = randint(50, 200)/100
+            self.character_attribute = [x,y]
             self.character_height = character_size ** (1 / 2)
             self.character_width = character_size ** (1 / 2)
             self.character_size = character_size
+            self.color = "violet"
+
+    class WeakEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            x = randint(50, 200)/100
+            y = randint(50, 200)/100
+            self.character_attribute = [x,y]
+            self.color = "yellow"
+
+    class HorizontalEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            x = randint(50, 200)/400
+            y = randint(50, 200)/25
+            self.character_attribute = [x,y]
+            self.color = "red"
+
+    class VerticalEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            x = randint(50, 200)/400
+            y = randint(50, 200)/25
+            self.character_attribute = [x,y]
+            self.color = "green"
+
+    class TallEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            self.character_height = 3* (character_size/3) ** (1 / 2)
+            self.character_width = (character_size/3) ** (1 / 2)
+            self.color = "violet"
+
+    class WideEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            self.character_height = (character_size/3) ** (1 / 2)
+            self.character_width = 3 *(character_size/3) ** (1 / 2)
+            self.color = "violet"
+
+    class InvisibleEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            self.color = ""
+
+    class BetterEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            x = randint(50, 200)/50
+            y = randint(50, 200)/50
+            self.character_attribute = [x,y]
+            self.color = "blue"
+
+    class StupidEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            x = 0
+            y = 0
+            self.character_attribute = [x,y]
+            self.color = "white"
+
+    class TrapEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            x = 0
+            y = 0
+            self.character_attribute = [x,y]
+            self.color = "Trap"
+
+    class CrazyEnemy(NormalEnemy):
+        def __init__(self, character_size):
+            super().__init__(character_size)
+            x = randint(0,5)
+            y = randint(0,5)
+            self.character_attribute = [x,y]
+            color = ["pink","grey","ornage"]
+            self.color = color
 
     def enemy_creation(self):
-        number_of_enemy = game_system.level + 5
+        number_of_enemy = game_system.level * 2
         weak_enemy = 1 + int(number_of_enemy / 10)
         enemy_count = 0
         while enemy_count < number_of_enemy:
@@ -95,27 +174,71 @@ class Battle:
             if enemy_count < weak_enemy:
                 character_size = (game_system.character[0].character_width * game_system.character[
                     0].character_height - 200) * game_system.scale_factor
-                color = "yellow"
+                enemy = self.WeakEnemy(character_size)
             else:
                 character_size = (game_system.character[0].character_width * game_system.character[
                     0].character_height + 200 * (enemy_count - weak_enemy)) * game_system.scale_factor
-                color = "#cc" + str(99 - int(80 / (number_of_enemy - weak_enemy)) * enemy_count) + "ff"
-                if len(str(99 - int(80 / (number_of_enemy - weak_enemy)) * enemy_count)) < 2:
-                    color = "purple"
-            enemy = self.normal_enemy(character_size)
+                enemy = ""
+                if game_system.level >= 2:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.VerticalEnemy(character_size)
+                if game_system.level >= 3:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.HorizontalEnemy(character_size)
+                if game_system.level >= 4:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.TallEnemy(character_size)
+                if game_system.level >= 5:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.WideEnemy(character_size)
+                if game_system.level >= 6:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.InvisibleEnemy(character_size)
+                if game_system.level >= 7:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.StupidEnemy(character_size)
+                if game_system.level >= 8:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.BetterEnemy(character_size)
+                if game_system.level >= 9:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.TrapEnemy(character_size)
+                if game_system.level >= 10:
+                    random_number = randint(0,100)
+                    if random_number <= 10:
+                        enemy = self.CrazyEnemy(character_size)
+                if enemy == "":
+                    enemy = self.NormalEnemy(character_size)
             enemy_x_pos = randint(0, int(window_width - enemy.character_width))
             enemy_y_pos = randint(0, 26 * int(h))
             enemy_position = [enemy_x_pos, enemy_y_pos, enemy_x_pos + enemy.character_width,
                               enemy_y_pos + enemy.character_height]
-            for number in range(len(game_system.character) - 1):
-                existing_position = game_system.character[number + 1].xy
-                if existing_position[0] < enemy_position[2] and existing_position[2] > enemy_position[0] \
-                        and existing_position[1] < enemy_position[3] and existing_position[3] > enemy_position[1]:
+            for number in range(len(game_system.character)):
+                if number == 0:
+                    existing_position = canvas.coords(game_system.character[0].identifier)
+                else:
+                    existing_position = game_system.character[number].xy
+                if existing_position[0] - 3 < enemy_position[2] and existing_position[2] > enemy_position[0] - 3 \
+                        and existing_position[1] - 3 < enemy_position[3] and existing_position[3] > enemy_position[1] - 3:
                     overlap = True
             if not overlap:
-                enemy.color = color
                 enemy.xy = enemy_position
-                enemy.identifier = canvas.create_rectangle(enemy.xy, fill=color)
+                if enemy.color == "":
+                    enemy.identifier = canvas.create_rectangle(enemy.xy, width=3)
+                elif enemy.color == "True":
+                    enemy.identifier = canvas.create_rectangle(enemy.xy, width=1)
+                elif enemy.color == "Trap":
+                    enemy.identifier = canvas.create_rectangle(enemy.xy, width=0)
+                else:
+                    enemy.identifier = canvas.create_rectangle(enemy.xy, fill=enemy.color)
                 game_system.character.append(enemy)
                 enemy_count += 1
 
@@ -174,7 +297,7 @@ class Battle:
         else:
             self.character_save.write("\n" + "bob")
         self.character_save.write("\n" + str(game_system.player_choice))
-        self.character_save.write("\n" + str(game_system.level+1))
+        self.character_save.write("\n" + str(game_system.level + 1))
 
         self.character_save.close()
 
@@ -348,9 +471,8 @@ class TextAdventure:
     def generating_texture(self, change_color):
         if self.theme == []:
             styles = [3, 2, 1, 1, 3, 2, 1, 6, 0, 0, 0, 3, 5, 4]
-            random = randint(0, 6)
-            texture_num_a = styles[random] + 1
-            texture_num_b = styles[-random - 1] + 1
+            texture_num_a = styles[randint(0, 6)] + 1
+            texture_num_b = styles[-randint(0, 6) - 1] + 1
             while texture_num_a == texture_num_b:
                 texture_num_a = randint(0, 4)
             self.theme.append(texture_num_a)
@@ -403,14 +525,14 @@ class TextAdventure:
                 game_system.character = [game_system.character[game_system.player_choice]]
         except:
             pass
-        try :
+        try:
             for number in range(len(game_system.design)):
-                    canvas.delete(game_system.design[number].identifier)
+                canvas.delete(game_system.design[number].identifier)
         except:
             pass
         try:
             for number in range(len(game_system.design)):
-                    canvas.delete(game_system.design[number].identifier_text)
+                canvas.delete(game_system.design[number].identifier_text)
         except:
             pass
         if len(game_system.identifier) > 0:
@@ -662,17 +784,18 @@ class GameSystem:
                 self.leader_list.close()
                 self.leader_list = open("player_records.txt", "r+")
 
-                self.level = 5
+                self.level = 1
                 self.game_setup()
                 self.menu()
 
             if self.win:
+                self.score = int(self.score) + 10
                 self.win = False
                 if self.level >= 20:
                     self.lose = True
-                    canvas.create_text(6*w,15*h, text="YOU WIN", fill="white", font="times 40 bold italic")
+                    canvas.create_text(6 * w, 15 * h, text="YOU WIN", fill="white", font="times 40 bold italic")
                     time.sleep(5)
-                    self.level = 5
+                    self.level = 1
                     self.game_setup()
                     self.menu()
                 canvas.delete(game_system.character[0].identifier)
